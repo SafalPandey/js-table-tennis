@@ -115,7 +115,7 @@ class Ball {
     if (this.y < 0) {
       this.bounce();
     }
-    // if (this.z < -100) this.reflect();
+    if (this.z < -100) this.reflect();
     if (this.z > this.board.length) {
       this.reflect();
     }
