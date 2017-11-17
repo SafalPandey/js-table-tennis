@@ -1,7 +1,7 @@
 class Projector {
 
   constructor() {
-    this.eye2plane = 500;
+    this.eye2plane = 600;
   }
 
   setCanvas(canvas) {

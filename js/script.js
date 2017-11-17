@@ -29,7 +29,7 @@ class Bat {
 
     this.canvas.addEventListener('mousemove', (evt) => {
       this.x = evt.clientX;
-      this.y = evt.clientY+(this.canvas.height/4);
+      this.y = evt.clientY;
     }, false);
   }
   drawBat() {
