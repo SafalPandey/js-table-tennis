@@ -1,4 +1,3 @@
-import {Projector} from "../perspectiveProjector.js"
 import {Board} from "../Board.js"
 import {Ball} from "../Ball.js"
 import {Bat} from "../Bat.js"

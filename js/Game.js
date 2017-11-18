@@ -10,7 +10,6 @@ export class Game {
     this.canvas.width = window.innerWidth;
     this.canvas.height = (window.innerHeight - 4);
     utils.PROJECTOR.setCanvas(this.canvas);
-    console.log(utils.PROJECTOR);
     this.ctx = this.canvas.getContext('2d');
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 

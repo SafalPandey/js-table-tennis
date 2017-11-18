@@ -15,8 +15,6 @@ export class Board {
     this.thickness = 10/400 *this.canvas.width/2; //yMax
     this.length = 720/400 * this.canvas.width/2; //zMax
 
-    console.log(utils);
-
     this.frontLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z);
     this.frontRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z);
     this.backRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z + this.length);
@@ -66,11 +64,6 @@ export class Board {
     this.ctx.fillStyle = "#122c5f";
     this.ctx.fill()
     this.ctx.closePath();
-
-
-
-
-
   }
   outerWhiteSurface() {
     this.ctx.moveTo(this.frontLeftPoint2d.x2d, this.frontLeftPoint2d.y2d);

@@ -1,9 +1,6 @@
 let utils = {
   PROJECTOR : {
-
-
       eye2plane : 600,
-      canvas1 : 5,
 
     setCanvas:(canvas)=> {
       utils.PROJECTOR.canvas = canvas;

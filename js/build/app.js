@@ -85,8 +85,6 @@ class Board {
     this.thickness = 10/400 *this.canvas.width/2; //yMax
     this.length = 720/400 * this.canvas.width/2; //zMax
 
-    console.log(utils);
-
     this.frontLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z);
     this.frontRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z);
     this.backRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z + this.length);
@@ -136,11 +134,6 @@ class Board {
     this.ctx.fillStyle = "#122c5f";
     this.ctx.fill()
     this.ctx.closePath();
-
-
-
-
-
   }
   outerWhiteSurface() {
     this.ctx.moveTo(this.frontLeftPoint2d.x2d, this.frontLeftPoint2d.y2d);
@@ -189,13 +182,10 @@ class Board {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__perspectiveProjector_js__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__perspectiveProjector_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__perspectiveProjector_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Board_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Ball_js__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Bat_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Game_js__ = __webpack_require__(5);
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Board_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Ball_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Bat_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Game_js__ = __webpack_require__(5);
 
 
 
@@ -204,7 +194,7 @@ const utils = __webpack_require__(7)
 // import {script} from "../script.js"
 
 
-let game = new __WEBPACK_IMPORTED_MODULE_4__Game_js__["a" /* Game */]();
+let game = new __WEBPACK_IMPORTED_MODULE_3__Game_js__["a" /* Game */]();
 let draw = () => {
 
 
@@ -225,12 +215,7 @@ window.requestAnimationFrame(draw)
 
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-throw new Error("Module build failed: Error: ENOENT: no such file or directory, open 'C:\\Users\\Sushilpandey\\Desktop\\js-table-tennis\\js\\perspectiveProjector.js'");
-
-/***/ }),
+/* 2 */,
 /* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -375,7 +360,6 @@ class Game {
     this.canvas.width = window.innerWidth;
     this.canvas.height = (window.innerHeight - 4);
     utils.PROJECTOR.setCanvas(this.canvas);
-    console.log(utils.PROJECTOR);
     this.ctx = this.canvas.getContext('2d');
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -397,10 +381,7 @@ class Game {
 
 let utils = {
   PROJECTOR : {
-
-
       eye2plane : 600,
-      canvas1 : 5,
 
     setCanvas:(canvas)=> {
       utils.PROJECTOR.canvas = canvas;
