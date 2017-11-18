@@ -1,0 +1,23 @@
+{
+  "name": "js-table-tennis",
+  "version": "1.0.0",
+  "description": "3D table tennis game\r  <a href=\"https://safalpandey.github.io/js-table-tennis/index\">Try it Here!!! </a>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SafalPandey/js-table-tennis.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SafalPandey/js-table-tennis/issues"
+  },
+  "homepage": "https://github.com/SafalPandey/js-table-tennis#readme",
+  "devDependencies": {
+    "webpack": "^3.8.1"
+  }
+}

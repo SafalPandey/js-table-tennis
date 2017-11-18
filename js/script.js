@@ -1,11 +1,13 @@
+const utils = require('./utils.js');
+
 class Game {
   constructor() {
     this.canvas = document.getElementById('gameCanvas');
     // this.canvas.style.border = "#000 1px solid"
     this.canvas.width = window.innerWidth;
     this.canvas.height = (window.innerHeight - 4);
-    projector.setCanvas(this.canvas);
-
+    utils.PROJECTOR.setCanvas(this.canvas);
+    console.log(utils.PROJECTOR);
     this.ctx = this.canvas.getContext('2d');
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -41,7 +43,7 @@ class Bat {
     this.ctx.closePath();
   }
   batPaddle() {
-    this.ctx.arc(this.x, this.y, projector.get2dLength(this.r, this.z), Math.PI / 2, Math.PI * 2);
+    this.ctx.arc(this.x, this.y, utils.PROJECTOR.get2dLength(this.r, this.z), Math.PI / 2, Math.PI * 2);
     this.ctx.fillStyle = "#9c0710";
     this.ctx.fill();
     this.ctx.closePath();
@@ -77,9 +79,9 @@ class Ball {
 
   draw() {
 
-    this.center2d = projector.get2d(this.x, this.y, this.z)
+    this.center2d = utils.PROJECTOR.get2d(this.x, this.y, this.z)
     this.ctx.beginPath();
-    this.ctx.arc(this.center2d.x2d, this.center2d.y2d, projector.get2dLength(this.r, this.z), 0, Math.PI * 2)
+    this.ctx.arc(this.center2d.x2d, this.center2d.y2d, utils.PROJECTOR.get2dLength(this.r, this.z), 0, Math.PI * 2)
     this.ctx.fillStyle = "#f4d443";
     this.ctx.fill();
     this.strokeStyle = "#837d66";
@@ -123,7 +125,6 @@ class Ball {
 
 }
 
-let projector = new Projector();
 let game = new Game();
 let draw = () => {
 
