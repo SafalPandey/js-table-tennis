@@ -1,6 +1,12 @@
-import {Board} from "./Board.js"
-import {Ball} from "./Ball.js"
-import {Bat} from "./Bat.js"
+import {
+  Board
+} from "./Board.js"
+import {
+  Ball
+} from "./Ball.js"
+import {
+  Bat
+} from "./Bat.js"
 const utils = require("./utils.js")
 
 export class Game {
@@ -13,10 +19,124 @@ export class Game {
     this.ctx = this.canvas.getContext('2d');
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.board = new Board(this.canvas, this.ctx);
-    this.ball = new Ball(this.ctx, this.board, 0, 0, 10);
-    this.ball.draw();
 
-    this.bat = new Bat(this.canvas, this.ctx, this.board);
+    this.bgImg = new Image();
+    this.bgImg.src = "images/bg1.png";
+    this.bgImg.onload = () => {
+      this.bgPattern = this.ctx.createPattern(this.bgImg, 'repeat');
+      this.ctx.fillStyle = this.bgPattern;
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    this.gravity = 0.003;
+    this.isStarted = false;
+    this.hasServed = false;
   }
+
+  init() {
+    this.board = new Board(this.canvas, this.ctx);
+    this.bat = new Bat(this.canvas, this.ctx, this.board);
+    this.ball = new Ball(this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 10);
+    this.timer = 0;
+    this.score = 0;
+
+    this.canvas.addEventListener("mouseover", (evt)=>{
+      this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
+      this.bat.x = this.bat.point3d.x;
+      this.bat.y = this.bat.point3d.y;
+      this.bat.z = this.bat.point3d.z;
+
+      this.bat.lastX = this.bat.point3d.x;
+      this.bat.lastZ = this.bat.point3d.z;
+    },false);
+
+    this.canvas.addEventListener('mousemove', (evt) => {
+      evt.preventDefault();
+      this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
+      this.bat.x = this.bat.point3d.x;
+      this.bat.y = this.bat.point3d.y;
+      this.bat.z = this.bat.point3d.z;
+
+    }, false)
+
+
+    this.canvas.addEventListener('touchmove', (evt) => {
+      evt.preventDefault();
+      let touch = evt.touches[0];
+      this.bat.point3d = utils.PROJECTOR.get3d(touch.pageX, touch.pageY);
+      this.bat.x = this.bat.point3d.x;
+      this.bat.y = this.bat.point3d.y;
+      this.bat.z = this.bat.point3d.z;
+    }, false)
+
+    this.isStarted = true;
+  }
+
+  serve() {
+    this.ball.dx = 0.1 * this.bat.dx
+    this.ball.dz = 0.1 * this.bat.dz;
+    this.hasServed = true;
+    this.timer = 0;
+  }
+
+
+
+
+  awardPoint() {
+    this.score++;
+  }
+  removePoint() {
+    this.score--;
+    this.hasServed = false;
+  }
+
+  anotherBall() {
+    this.ball = null;
+
+    this.ball = new Ball(this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 5);
+    this.timer = 0;
+  }
+  drawBackground() {
+
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.rect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = '#000';
+    this.ctx.fill();
+  }
+
+
+  drawScore() {
+    this.ctx.fillStyle = "#fff";
+    this.ctx.strokeStyle = "#000";
+    this.ctx.font = "30px Arial";
+    this.ctx.fillText("Score: " + this.score, 30, 30);
+  }
+
+  over() {
+    this.canvas.removeEventListener('mousemove', (evt) => {
+      evt.preventDefault();
+      if (evt.clientX - this.canvas.width / 2 > -this.board.width && evt.clientX - this.canvas.width / 2 < this.board.width) {
+
+        this.bat.x = evt.clientX - this.canvas.width / 2;
+      }
+      if (evt.clientY < this.canvas.height - 50)
+        this.bat.z = this.canvas.height - evt.clientY - 10;
+    }, false)
+    this.canvas.removeEventListener('touchmove', (evt) => {
+      evt.preventDefault();
+      let touch = evt.touches[0];
+      console.log("touchM", touch.pageX, touch.pageY / 2);
+
+      this.bat.x = touch.pageX - this.canvas.width / 2;
+      this.bat.z = this.canvas.height - touch.pageY - 10;
+    }, false)
+    this.board = null;
+    this.bat = null;
+    this.ball = null;
+    this.point = 0;
+
+    this.isStarted = false;
+    window.cancelAnimationFrame(this.animationLoop);
+  }
+
 }
