@@ -53,6 +53,7 @@ export class Ball {
   }
 
   reflect() {
+    this.dz *=1.5;
     this.dz = -this.dz;
   }
   bounce() {
@@ -79,10 +80,10 @@ export class Ball {
       this.bounceCount++;
       this.bounce();
     }
-    if (this.y < 0) {
-      this.bounce();
-    }
-    if (this.z < -100) this.reflect();
+
+
+
+    // if (this.z < -100) this.reflect();
     if (this.z > this.board.length) {
       this.bounceCount = 0;
       this.reflect();

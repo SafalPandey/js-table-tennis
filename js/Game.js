@@ -27,8 +27,17 @@ export class Game {
       this.ctx.fillStyle = this.bgPattern;
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
+    this.bgRadius = this.canvas.width * 1.2;
 
-    this.gravity = 0.003;
+    this.bgCenter = {
+      x : this.canvas.width / 2,
+      y: this.canvas.height * 2.8
+    }
+    this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius-100);
+    this.bgGradient.addColorStop(0, '#030');
+    this.bgGradient.addColorStop(1, '#070');
+
+    this.gravity = 0.006;
     this.isStarted = false;
     this.hasServed = false;
   }
@@ -36,11 +45,14 @@ export class Game {
   init() {
     this.board = new Board(this.canvas, this.ctx);
     this.bat = new Bat(this.canvas, this.ctx, this.board);
+    this.opponentBat = new Bat(this.canvas, this.ctx, this.board);
+    this.opponentBat.z = this.board.length;
+    this.opponentBat.isOpponent = true;
     this.ball = new Ball(this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 10);
     this.timer = 0;
     this.score = 0;
 
-    this.canvas.addEventListener("mouseover", (evt)=>{
+    this.canvas.addEventListener("mouseover", (evt) => {
       this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
       this.bat.x = this.bat.point3d.x;
       this.bat.y = this.bat.point3d.y;
@@ -48,7 +60,7 @@ export class Game {
 
       this.bat.lastX = this.bat.point3d.x;
       this.bat.lastZ = this.bat.point3d.z;
-    },false);
+    }, false);
 
     this.canvas.addEventListener('mousemove', (evt) => {
       evt.preventDefault();
@@ -99,9 +111,17 @@ export class Game {
   drawBackground() {
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.rect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = '#000';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.beginPath();
+    this.ctx.arc(this.bgCenter.x, this.bgCenter.y, this.bgRadius, -Math.PI, 0);
+
+    this.ctx.fillStyle = this.bgGradient;
+    // ctx.fillRect(0, 0, 200, 200);
+    // this.ctx.fillStyle = "#aa9f7f";
     this.ctx.fill();
+    this.ctx.closePath();
+
   }
 
 

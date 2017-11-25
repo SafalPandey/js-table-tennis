@@ -25,9 +25,9 @@ export class Board {
     this.frontRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z);
 
     this.middleRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z + this.length/2);
-    this.middleRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y - 55, this.z + this.length/2);
+    this.middleRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y - 55/400 * this.width, this.z + this.length/2);
     this.middleLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z + this.length/2);
-    this.middleLeftTopPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y - 55, this.z + this.length/2);
+    this.middleLeftTopPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y - 55/400 * this.width, this.z + this.length/2);
 
 
     this.innerSurfaceFrontLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width + 10 / 400 * this.width, this.y, this.z + 10 / 400 * this.width);

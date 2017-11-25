@@ -5,7 +5,7 @@ export class Bat {
     this.ctx = ctx;
     this.board = board;
     this.x = 0;
-    this.y = this.board.y - 150;
+    this.y = this.board.y - 100;
     this.z = -10;
     this.r = 5 * 10 / 400 * this.board.width;
 
@@ -16,6 +16,8 @@ export class Bat {
     this.mouseX = 0;
     this.mouseY = 0;
 
+    this.isOpponent= false;
+
   }
   drawBat(hasServed) {
 
@@ -23,7 +25,7 @@ export class Bat {
     if(this.x < this.board.x - this.board.width) this.x = this.board.x - this.board.width
     if(this.x > this.board.x + this.board.width) this.x = this.board.x + this.board.width
     // if (this.z < -25) this.z = -25;
-    // if (this.z > this.board.z + this.board.length) this.z = 360;
+    if (!this.isOpponent && this.z > this.board.z + this.board.length/2) this.z = this.board.length/2;
     this.point2d = utils.PROJECTOR.get2d(this.x, this.y, this.z);
     this.dx = this.x - this.lastX;
     this.dz = this.z - this.lastZ;

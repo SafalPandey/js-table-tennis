@@ -91,7 +91,7 @@ let utils = {
       z: 500
     },
 
-    eye2plane: 800,
+    eye2plane: 600,
 
     setCanvas: (canvas) => {
       utils.PROJECTOR.canvas = canvas;
@@ -173,7 +173,7 @@ let utils = {
 
   },
 
-  BAT_Y_POSITION: 150,
+  BAT_Y_POSITION: 200,
 
 }
 
@@ -212,9 +212,9 @@ class Board {
     this.frontRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z);
 
     this.middleRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z + this.length/2);
-    this.middleRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y - 55, this.z + this.length/2);
+    this.middleRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y - 55/400 * this.width, this.z + this.length/2);
     this.middleLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z + this.length/2);
-    this.middleLeftTopPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y - 55, this.z + this.length/2);
+    this.middleLeftTopPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y - 55/400 * this.width, this.z + this.length/2);
 
 
     this.innerSurfaceFrontLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width + 10 / 400 * this.width, this.y, this.z + 10 / 400 * this.width);
@@ -398,6 +398,7 @@ class Ball {
   }
 
   reflect() {
+    this.dz *=1.5;
     this.dz = -this.dz;
   }
   bounce() {
@@ -424,10 +425,10 @@ class Ball {
       this.bounceCount++;
       this.bounce();
     }
-    if (this.y < 0) {
-      this.bounce();
-    }
-    if (this.z < -100) this.reflect();
+
+
+
+    // if (this.z < -100) this.reflect();
     if (this.z > this.board.length) {
       this.bounceCount = 0;
       this.reflect();
@@ -451,7 +452,7 @@ class Bat {
     this.ctx = ctx;
     this.board = board;
     this.x = 0;
-    this.y = this.board.y - 150;
+    this.y = this.board.y - 100;
     this.z = -10;
     this.r = 5 * 10 / 400 * this.board.width;
 
@@ -462,6 +463,8 @@ class Bat {
     this.mouseX = 0;
     this.mouseY = 0;
 
+    this.isOpponent= false;
+
   }
   drawBat(hasServed) {
 
@@ -469,7 +472,7 @@ class Bat {
     if(this.x < this.board.x - this.board.width) this.x = this.board.x - this.board.width
     if(this.x > this.board.x + this.board.width) this.x = this.board.x + this.board.width
     // if (this.z < -25) this.z = -25;
-    // if (this.z > this.board.z + this.board.length) this.z = 360;
+    if (!this.isOpponent && this.z > this.board.z + this.board.length/2) this.z = this.board.length/2;
     this.point2d = utils.PROJECTOR.get2d(this.x, this.y, this.z);
     this.dx = this.x - this.lastX;
     this.dz = this.z - this.lastZ;
@@ -546,18 +549,21 @@ let draw = () => {
   if (game.ball.y < game.board.y) game.ball.dy += game.gravity * game.timer;
   // else game.ball.dy = 0;
   game.ball.updatePosition();
-  if (game.ball.z > 0) game.ball.draw();
+  if(game.ball.z > -200) game.ball.draw();
 
   game.bat.drawBat(game.hasServed);
+  game.opponentBat.x = game.ball.x;
+  // game.opponentBat.y = game.ball.y;
+  game.opponentBat.drawBat(game.hasServed);
 
-  if(!game.hasServed) game.ball.x = game.bat.x
-  if (!game.hasServed && game.bat.dz> 0 && game.bat.z > game.ball.z ) game.serve();
+  if (!game.hasServed) game.ball.x = game.bat.x
+  if (!game.hasServed && game.bat.dz > 0 && game.bat.z > game.ball.z) game.serve();
   game.drawScore();
-  if (game.hasServed && game.ball.z > game.bat.z - 10 && game.ball.z < game.bat.z && game.ball.x > game.bat.x - game.bat.r && game.ball.x < game.bat.x + game.bat.r && game.ball.y < game.bat.y + game.bat.r ) {
+  if (game.hasServed && game.ball.bounceCount != 0 && game.ball.z > game.bat.z - 10 && game.ball.z < game.bat.z && game.ball.x > game.bat.x - game.bat.r && game.ball.x < game.bat.x + game.bat.r && game.ball.y > game.bat.y - game.bat.r && game.ball.y < game.bat.y + game.bat.r) {
     console.log("reflected");
     game.ball.bounceCount = 0;
-
     game.awardPoint();
+
     game.ball.reflect();
     game.ball.z = 10;
   }
@@ -567,9 +573,7 @@ let draw = () => {
     game.anotherBall();
     game.animationLoop = window.requestAnimationFrame(draw);
 
-  }
-
-  else if (game.score == -10) {
+  } else if (game.score == -10) {
     game.over();
   } else {
 
@@ -610,8 +614,17 @@ class Game {
       this.ctx.fillStyle = this.bgPattern;
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
+    this.bgRadius = this.canvas.width * 1.2;
 
-    this.gravity = 0.003;
+    this.bgCenter = {
+      x : this.canvas.width / 2,
+      y: this.canvas.height * 2.8
+    }
+    this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius-100);
+    this.bgGradient.addColorStop(0, '#030');
+    this.bgGradient.addColorStop(1, '#070');
+
+    this.gravity = 0.006;
     this.isStarted = false;
     this.hasServed = false;
   }
@@ -619,11 +632,14 @@ class Game {
   init() {
     this.board = new __WEBPACK_IMPORTED_MODULE_0__Board_js__["a" /* Board */](this.canvas, this.ctx);
     this.bat = new __WEBPACK_IMPORTED_MODULE_2__Bat_js__["a" /* Bat */](this.canvas, this.ctx, this.board);
+    this.opponentBat = new __WEBPACK_IMPORTED_MODULE_2__Bat_js__["a" /* Bat */](this.canvas, this.ctx, this.board);
+    this.opponentBat.z = this.board.length;
+    this.opponentBat.isOpponent = true;
     this.ball = new __WEBPACK_IMPORTED_MODULE_1__Ball_js__["a" /* Ball */](this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 10);
     this.timer = 0;
     this.score = 0;
 
-    this.canvas.addEventListener("mouseover", (evt)=>{
+    this.canvas.addEventListener("mouseover", (evt) => {
       this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
       this.bat.x = this.bat.point3d.x;
       this.bat.y = this.bat.point3d.y;
@@ -631,7 +647,7 @@ class Game {
 
       this.bat.lastX = this.bat.point3d.x;
       this.bat.lastZ = this.bat.point3d.z;
-    },false);
+    }, false);
 
     this.canvas.addEventListener('mousemove', (evt) => {
       evt.preventDefault();
@@ -682,9 +698,17 @@ class Game {
   drawBackground() {
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.rect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = '#000';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.beginPath();
+    this.ctx.arc(this.bgCenter.x, this.bgCenter.y, this.bgRadius, -Math.PI, 0);
+
+    this.ctx.fillStyle = this.bgGradient;
+    // ctx.fillRect(0, 0, 200, 200);
+    // this.ctx.fillStyle = "#aa9f7f";
     this.ctx.fill();
+    this.ctx.closePath();
+
   }
 
 

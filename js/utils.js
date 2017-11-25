@@ -22,7 +22,7 @@ let utils = {
       z: 500
     },
 
-    eye2plane: 800,
+    eye2plane: 600,
 
     setCanvas: (canvas) => {
       utils.PROJECTOR.canvas = canvas;
@@ -104,7 +104,7 @@ let utils = {
 
   },
 
-  BAT_Y_POSITION: 150,
+  BAT_Y_POSITION: 200,
 
 }
 
