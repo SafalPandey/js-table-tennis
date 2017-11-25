@@ -18,6 +18,7 @@ export class Ball {
     this.dy = 0;
     this.dz = 0;
 
+    this.maxY = this.board.y;
 
 
     this.shadowY = this.board.y;
@@ -31,7 +32,7 @@ export class Ball {
     else this.shadowY = this.board.y;
 
     this.center2d = utils.PROJECTOR.get2d(this.x, this.y, this.z);
-    this.shadow = utils.PROJECTOR.get2d(this.x, this.shadowY, this.z);
+    this.shadow = utils.PROJECTOR.get2d(this.x, this.maxY, this.z);
     let radius2d = utils.PROJECTOR.get2dLength(this.r, this.z);
     //shadow
     this.ctx.beginPath();
@@ -48,8 +49,6 @@ export class Ball {
     this.strokeStyle = "#837d66";
     // this.ctx.stroke();
     this.ctx.closePath();
-
-
   }
 
   reflect() {
@@ -62,6 +61,10 @@ export class Ball {
   sideCheck() {
     this.dx = -this.dx;
 
+  }
+
+  fall(){
+    this.maxY = 500;
   }
   updatePosition() {
 
@@ -76,9 +79,13 @@ export class Ball {
     //   this.sideCheck();
     // }
 
-    if (this.y > this.board.y - this.r) {
+    if (this.y > this.maxY - this.r) {
       this.bounceCount++;
       this.bounce();
+    }
+
+    if (this.z < this.board.z || this.z > this.board.z + this.board.length || this.x < -this.board.width || this.x > this.board.width) {
+      this.fall();
     }
 
 

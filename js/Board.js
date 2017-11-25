@@ -58,7 +58,7 @@ export class Board {
     //outer white surface drawing
     this.ctx.beginPath();
     //outer white surface path
-    this.outerWhiteSurface();
+    this.makeOuterWhiteSurface();
     this.ctx.stroke();
     this.ctx.fillStyle = "white";
     this.ctx.fill()
@@ -66,7 +66,7 @@ export class Board {
     //inner surface drawing
     this.ctx.beginPath();
     //inner surface path
-    this.innerSurface();
+    this.makeInnerSurface();
     this.ctx.stroke();
     this.ctx.fillStyle = "#24529b";
     this.ctx.fill();
@@ -75,7 +75,7 @@ export class Board {
     //center border drawing
     this.ctx.beginPath();
     //center border path
-    this.centerBorder();
+    this.makeCenterBorder();
     this.ctx.fillStyle = "white";
     this.ctx.fill()
     this.ctx.closePath();
@@ -83,7 +83,7 @@ export class Board {
     //board-thickness drawing
     this.ctx.beginPath();
     //board-thickness path
-    this.boardThickness();
+    this.makeBoardThickness();
     this.ctx.stroke();
     this.ctx.fillStyle = "#122c5f";
     this.ctx.fill()
@@ -93,26 +93,26 @@ export class Board {
     //net drawing
     this.ctx.beginPath();
     //net path
-    this.net();
+    this.makeNet();
     this.ctx.fillStyle = this.netPattern;
     this.ctx.fill();
     this.ctx.closePath();
     // this.ctx.fill();
   }
-  outerWhiteSurface() {
+  makeOuterWhiteSurface() {
     this.ctx.moveTo(this.frontLeftPoint2d.x2d, this.frontLeftPoint2d.y2d);
     this.ctx.lineTo(this.frontRightPoint2d.x2d, this.frontRightPoint2d.y2d);
     this.ctx.lineTo(this.backRightPoint2d.x2d, this.backRightPoint2d.y2d);
     this.ctx.lineTo(this.backLeftPoint2d.x2d, this.backLeftPoint2d.y2d);
     this.ctx.lineTo(this.frontLeftoint2d.x2d, this.frontLeftoint2d.y2d);
   }
-  net(){
+  makeNet(){
     this.ctx.moveTo(this.middleLeftTopPoint2d.x2d,this.middleLeftTopPoint2d.y2d)
     this.ctx.lineTo(this.middleRightTopPoint2d.x2d,this.middleRightTopPoint2d.y2d)
     this.ctx.lineTo(this.middleRightTopPoint2d.x2d,this.middleRightPoint2d.y2d)
     this.ctx.lineTo(this.middleLeftTopPoint2d.x2d,this.middleLeftPoint2d.y2d)
   }
-  innerSurface() {
+  makeInnerSurface() {
     //front-left point
     this.ctx.moveTo(this.innerSurfaceFrontLeftPoint2d.x2d, this.innerSurfaceFrontLeftPoint2d.y2d);
     //front-right point
@@ -128,7 +128,7 @@ export class Board {
     this.ctx.lineTo(this.innerSurfaceFrontLeftoint2d.x2d, this.innerSurfaceFrontLeftoint2d.y2d);
 
   }
-  centerBorder() {
+  makeCenterBorder() {
 
     this.ctx.moveTo(this.centerBorderFrontLeftPoint2d.x2d, this.centerBorderFrontLeftPoint2d.y2d)
     this.ctx.lineTo(this.centerBorderFrontRightPoint2d.x2d, this.centerBorderFrontRightPoint2d.y2d)
@@ -136,7 +136,7 @@ export class Board {
     this.ctx.lineTo(this.centerBorderBackLeftPoint2d.x2d, this.centerBorderBackLeftPoint2d.y2d)
 
   }
-  boardThickness() {
+  makeBoardThickness() {
 
     this.ctx.moveTo(this.frontLeftPoint2d.x2d, this.frontLeftPoint2d.y2d);
     //front-left-bottom point

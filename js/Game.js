@@ -28,10 +28,12 @@ export class Game {
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
     this.bgRadius = this.canvas.width * 1.2;
-
+    console.log(this.canvas.height,this.canvas.width * 0.5625);
     this.bgCenter = {
       x : this.canvas.width / 2,
-      y: this.canvas.height * 2.8
+      y: this.canvas.width * 1.375
+      // y: this.canvas.height * 2.8
+
     }
     this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius-100);
     this.bgGradient.addColorStop(0, '#030');

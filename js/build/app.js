@@ -245,7 +245,7 @@ class Board {
     //outer white surface drawing
     this.ctx.beginPath();
     //outer white surface path
-    this.outerWhiteSurface();
+    this.makeOuterWhiteSurface();
     this.ctx.stroke();
     this.ctx.fillStyle = "white";
     this.ctx.fill()
@@ -253,7 +253,7 @@ class Board {
     //inner surface drawing
     this.ctx.beginPath();
     //inner surface path
-    this.innerSurface();
+    this.makeInnerSurface();
     this.ctx.stroke();
     this.ctx.fillStyle = "#24529b";
     this.ctx.fill();
@@ -262,7 +262,7 @@ class Board {
     //center border drawing
     this.ctx.beginPath();
     //center border path
-    this.centerBorder();
+    this.makeCenterBorder();
     this.ctx.fillStyle = "white";
     this.ctx.fill()
     this.ctx.closePath();
@@ -270,7 +270,7 @@ class Board {
     //board-thickness drawing
     this.ctx.beginPath();
     //board-thickness path
-    this.boardThickness();
+    this.makeBoardThickness();
     this.ctx.stroke();
     this.ctx.fillStyle = "#122c5f";
     this.ctx.fill()
@@ -280,26 +280,26 @@ class Board {
     //net drawing
     this.ctx.beginPath();
     //net path
-    this.net();
+    this.makeNet();
     this.ctx.fillStyle = this.netPattern;
     this.ctx.fill();
     this.ctx.closePath();
     // this.ctx.fill();
   }
-  outerWhiteSurface() {
+  makeOuterWhiteSurface() {
     this.ctx.moveTo(this.frontLeftPoint2d.x2d, this.frontLeftPoint2d.y2d);
     this.ctx.lineTo(this.frontRightPoint2d.x2d, this.frontRightPoint2d.y2d);
     this.ctx.lineTo(this.backRightPoint2d.x2d, this.backRightPoint2d.y2d);
     this.ctx.lineTo(this.backLeftPoint2d.x2d, this.backLeftPoint2d.y2d);
     this.ctx.lineTo(this.frontLeftoint2d.x2d, this.frontLeftoint2d.y2d);
   }
-  net(){
+  makeNet(){
     this.ctx.moveTo(this.middleLeftTopPoint2d.x2d,this.middleLeftTopPoint2d.y2d)
     this.ctx.lineTo(this.middleRightTopPoint2d.x2d,this.middleRightTopPoint2d.y2d)
     this.ctx.lineTo(this.middleRightTopPoint2d.x2d,this.middleRightPoint2d.y2d)
     this.ctx.lineTo(this.middleLeftTopPoint2d.x2d,this.middleLeftPoint2d.y2d)
   }
-  innerSurface() {
+  makeInnerSurface() {
     //front-left point
     this.ctx.moveTo(this.innerSurfaceFrontLeftPoint2d.x2d, this.innerSurfaceFrontLeftPoint2d.y2d);
     //front-right point
@@ -315,7 +315,7 @@ class Board {
     this.ctx.lineTo(this.innerSurfaceFrontLeftoint2d.x2d, this.innerSurfaceFrontLeftoint2d.y2d);
 
   }
-  centerBorder() {
+  makeCenterBorder() {
 
     this.ctx.moveTo(this.centerBorderFrontLeftPoint2d.x2d, this.centerBorderFrontLeftPoint2d.y2d)
     this.ctx.lineTo(this.centerBorderFrontRightPoint2d.x2d, this.centerBorderFrontRightPoint2d.y2d)
@@ -323,7 +323,7 @@ class Board {
     this.ctx.lineTo(this.centerBorderBackLeftPoint2d.x2d, this.centerBorderBackLeftPoint2d.y2d)
 
   }
-  boardThickness() {
+  makeBoardThickness() {
 
     this.ctx.moveTo(this.frontLeftPoint2d.x2d, this.frontLeftPoint2d.y2d);
     //front-left-bottom point
@@ -363,6 +363,7 @@ class Ball {
     this.dy = 0;
     this.dz = 0;
 
+    this.maxY = this.board.y;
 
 
     this.shadowY = this.board.y;
@@ -376,7 +377,7 @@ class Ball {
     else this.shadowY = this.board.y;
 
     this.center2d = utils.PROJECTOR.get2d(this.x, this.y, this.z);
-    this.shadow = utils.PROJECTOR.get2d(this.x, this.shadowY, this.z);
+    this.shadow = utils.PROJECTOR.get2d(this.x, this.maxY, this.z);
     let radius2d = utils.PROJECTOR.get2dLength(this.r, this.z);
     //shadow
     this.ctx.beginPath();
@@ -393,8 +394,6 @@ class Ball {
     this.strokeStyle = "#837d66";
     // this.ctx.stroke();
     this.ctx.closePath();
-
-
   }
 
   reflect() {
@@ -407,6 +406,10 @@ class Ball {
   sideCheck() {
     this.dx = -this.dx;
 
+  }
+
+  fall(){
+    this.maxY = 500;
   }
   updatePosition() {
 
@@ -421,9 +424,13 @@ class Ball {
     //   this.sideCheck();
     // }
 
-    if (this.y > this.board.y - this.r) {
+    if (this.y > this.maxY - this.r) {
       this.bounceCount++;
       this.bounce();
+    }
+
+    if (this.z < this.board.z || this.z > this.board.z + this.board.length || this.x < -this.board.width || this.x > this.board.width) {
+      this.fall();
     }
 
 
@@ -472,7 +479,7 @@ class Bat {
     if(this.x < this.board.x - this.board.width) this.x = this.board.x - this.board.width
     if(this.x > this.board.x + this.board.width) this.x = this.board.x + this.board.width
     // if (this.z < -25) this.z = -25;
-    if (!this.isOpponent && this.z > this.board.z + this.board.length/2) this.z = this.board.length/2;
+    if (!this.isOpponent && this.z > this.board.length/2) this.z = this.board.length/2;
     this.point2d = utils.PROJECTOR.get2d(this.x, this.y, this.z);
     this.dx = this.x - this.lastX;
     this.dz = this.z - this.lastZ;
@@ -482,8 +489,8 @@ class Bat {
     // this.ctx.rotate(Math.PI);
 
     this.ctx.beginPath();
-    // this.batShadow();
-    this.batPaddle(hasServed);
+    // this.makeBatShadow();
+    this.makeBatPaddle(hasServed);
     this.ctx.closePath();
     this.lastX = this.x;
     this.lastZ = this.z;
@@ -492,10 +499,10 @@ class Bat {
     // this.ctx.translate(-this.point2d.x2d,-this.point2d.y2d)
     this.ctx.restore();
   }
-  batShadow(){
+  makeBatShadow(){
 
   }
-  batPaddle(hasServed) {
+  makeBatPaddle(hasServed) {
     this.ctx.arc(this.point2d.x2d, this.point2d.y2d,utils.PROJECTOR.get2dLength( this.r,this.z), Math.PI / 2, Math.PI * 2);
     // this.ctx.fillStyle = "#9c0710";
     if (hasServed) {
@@ -545,6 +552,7 @@ game.init();
 let draw = () => {
   if (game.hasServed) game.timer++;
   game.drawBackground();
+  game.drawScore();
   game.board.drawBoard();
   if (game.ball.y < game.board.y) game.ball.dy += game.gravity * game.timer;
   // else game.ball.dy = 0;
@@ -552,13 +560,16 @@ let draw = () => {
   if(game.ball.z > -200) game.ball.draw();
 
   game.bat.drawBat(game.hasServed);
-  game.opponentBat.x = game.ball.x;
+
+  if (game.ball.z > game.board.length/2) {
+
+    game.opponentBat.x = game.ball.x;
+  }
   // game.opponentBat.y = game.ball.y;
   game.opponentBat.drawBat(game.hasServed);
 
   if (!game.hasServed) game.ball.x = game.bat.x
   if (!game.hasServed && game.bat.dz > 0 && game.bat.z > game.ball.z) game.serve();
-  game.drawScore();
   if (game.hasServed && game.ball.bounceCount != 0 && game.ball.z > game.bat.z - 10 && game.ball.z < game.bat.z && game.ball.x > game.bat.x - game.bat.r && game.ball.x < game.bat.x + game.bat.r && game.ball.y > game.bat.y - game.bat.r && game.ball.y < game.bat.y + game.bat.r) {
     console.log("reflected");
     game.ball.bounceCount = 0;
@@ -567,13 +578,13 @@ let draw = () => {
     game.ball.reflect();
     game.ball.z = 10;
   }
-  if (game.ball.bounceCount >= 10) {
+  if (game.ball.bounceCount >= 5) {
     game.ball.bounceCount = 0;
     game.removePoint();
     game.anotherBall();
-    game.animationLoop = window.requestAnimationFrame(draw);
+  }
 
-  } else if (game.score == -10) {
+  if (game.score == -10) {
     game.over();
   } else {
 
@@ -615,10 +626,12 @@ class Game {
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
     this.bgRadius = this.canvas.width * 1.2;
-
+    console.log(this.canvas.height,this.canvas.width * 0.5625);
     this.bgCenter = {
       x : this.canvas.width / 2,
-      y: this.canvas.height * 2.8
+      y: this.canvas.width * 1.375
+      // y: this.canvas.height * 2.8
+
     }
     this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius-100);
     this.bgGradient.addColorStop(0, '#030');
