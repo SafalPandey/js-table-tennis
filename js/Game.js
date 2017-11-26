@@ -31,7 +31,7 @@ export class Game {
     console.log(this.canvas.height,this.canvas.width * 0.5625);
     this.bgCenter = {
       x : this.canvas.width / 2,
-      y: this.canvas.width * 1.375
+      y: this.canvas.width * 1.4
       // y: this.canvas.height * 2.8
 
     }

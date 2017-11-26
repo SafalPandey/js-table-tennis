@@ -36,7 +36,7 @@ let draw = () => {
 
   if (!game.hasServed) game.ball.x = game.bat.x
   if (!game.hasServed && game.bat.dz > 0 && game.bat.z > game.ball.z) game.serve();
-  if (game.hasServed && game.ball.bounceCount != 0 && game.ball.z > game.bat.z - 10 && game.ball.z < game.bat.z && game.ball.x > game.bat.x - game.bat.r && game.ball.x < game.bat.x + game.bat.r && game.ball.y > game.bat.y - game.bat.r && game.ball.y < game.bat.y + game.bat.r) {
+  if (game.hasServed && game.ball.bounceCount != 0 && game.ball.z > game.bat.z - 10 && game.ball.z < game.bat.z && game.ball.x > game.bat.x - game.bat.r && game.ball.x < game.bat.x + game.bat.r && game.ball.y > game.bat.y - game.bat.r ) {
     console.log("reflected");
     game.ball.bounceCount = 0;
     game.awardPoint();

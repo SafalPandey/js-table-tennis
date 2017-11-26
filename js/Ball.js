@@ -52,7 +52,7 @@ export class Ball {
   }
 
   reflect() {
-    this.dz *=1.5;
+    this.dz *=1.25;
     this.dz = -this.dz;
   }
   bounce() {

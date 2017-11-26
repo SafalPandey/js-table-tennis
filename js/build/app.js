@@ -96,8 +96,7 @@ let utils = {
     setCanvas: (canvas) => {
       utils.PROJECTOR.canvas = canvas;
       utils.PROJECTOR.viewerPosition.x = -canvas.width / 2;
-      utils.PROJECTOR.viewerPosition.x = -canvas.width / 2;
-      utils.PROJECTOR.viewerPosition.y = -500;
+      utils.PROJECTOR.viewerPosition.y = -canvas.height/1.35;
     },
 
     get2d: (x, y, z) => {
@@ -397,7 +396,7 @@ class Ball {
   }
 
   reflect() {
-    this.dz *=1.5;
+    this.dz *=1.25;
     this.dz = -this.dz;
   }
   bounce() {
@@ -570,7 +569,7 @@ let draw = () => {
 
   if (!game.hasServed) game.ball.x = game.bat.x
   if (!game.hasServed && game.bat.dz > 0 && game.bat.z > game.ball.z) game.serve();
-  if (game.hasServed && game.ball.bounceCount != 0 && game.ball.z > game.bat.z - 10 && game.ball.z < game.bat.z && game.ball.x > game.bat.x - game.bat.r && game.ball.x < game.bat.x + game.bat.r && game.ball.y > game.bat.y - game.bat.r && game.ball.y < game.bat.y + game.bat.r) {
+  if (game.hasServed && game.ball.bounceCount != 0 && game.ball.z > game.bat.z - 10 && game.ball.z < game.bat.z && game.ball.x > game.bat.x - game.bat.r && game.ball.x < game.bat.x + game.bat.r && game.ball.y > game.bat.y - game.bat.r ) {
     console.log("reflected");
     game.ball.bounceCount = 0;
     game.awardPoint();
@@ -629,7 +628,7 @@ class Game {
     console.log(this.canvas.height,this.canvas.width * 0.5625);
     this.bgCenter = {
       x : this.canvas.width / 2,
-      y: this.canvas.width * 1.375
+      y: this.canvas.width * 1.4
       // y: this.canvas.height * 2.8
 
     }
