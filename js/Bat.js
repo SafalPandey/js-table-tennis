@@ -22,8 +22,8 @@ export class Bat {
   drawBat(hasServed) {
 
 
-    if(this.x < this.board.x - this.board.width) this.x = this.board.x - this.board.width
-    if(this.x > this.board.x + this.board.width) this.x = this.board.x + this.board.width
+    if(this.isOpponent && this.x < this.board.x - this.board.width) this.x = this.board.x - this.board.width
+    if(this.isOpponent && this.x > this.board.x + this.board.width) this.x = this.board.x + this.board.width
     // if (this.z < -25) this.z = -25;
     if (!this.isOpponent && this.z > this.board.length/2) this.z = this.board.length/2;
     this.point2d = utils.PROJECTOR.get2d(this.x, this.y, this.z);
@@ -49,7 +49,7 @@ export class Bat {
 
   }
   makeBatPaddle(hasServed) {
-    this.ctx.arc(this.point2d.x2d, this.point2d.y2d,utils.PROJECTOR.get2dLength( this.r,this.z), Math.PI / 2, Math.PI * 2);
+    this.ctx.arc(this.point2d.x2d, this.point2d.y2d,Math.abs(utils.PROJECTOR.get2dLength( this.r,this.z)), Math.PI / 2, Math.PI * 2);
     // this.ctx.fillStyle = "#9c0710";
     if (hasServed) {
       this.ctx.fillStyle = "rgba(156,7,16,1)";

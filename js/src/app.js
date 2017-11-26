@@ -14,8 +14,8 @@ const utils = require("../utils.js")
 
 
 let game = new Game();
-game.init();
-let draw = () => {
+// game.init();
+export let draw = () => {
   if (game.hasServed) game.timer++;
   game.drawBackground();
   game.drawScore();
@@ -27,9 +27,9 @@ let draw = () => {
 
   game.bat.drawBat(game.hasServed);
 
-  if (game.ball.z > game.board.length/2) {
-
+  if (game.ball.z > game.board.length/2 && game.ball.opponentBounceCount > 0) {
     game.opponentBat.x = game.ball.x;
+    game.opponentBat.z = game.ball.z;
   }
   // game.opponentBat.y = game.ball.y;
   game.opponentBat.drawBat(game.hasServed);
@@ -39,15 +39,22 @@ let draw = () => {
   if (game.hasServed && game.ball.bounceCount != 0 && game.ball.z > game.bat.z - 10 && game.ball.z < game.bat.z && game.ball.x > game.bat.x - game.bat.r && game.ball.x < game.bat.x + game.bat.r && game.ball.y > game.bat.y - game.bat.r ) {
     console.log("reflected");
     game.ball.bounceCount = 0;
-    game.awardPoint();
-
+    game.ball.opponentBounceCount = 0;
     game.ball.reflect();
-    game.ball.z = 10;
+    // game.ball.z = 10;
   }
   if (game.ball.bounceCount >= 5) {
     game.ball.bounceCount = 0;
+    game.ball.opponentBounceCount = 0;
     game.removePoint();
     game.anotherBall();
+  } else if (game.ball.opponentBounceCount > 5) {
+    game.ball.bounceCount = 0;
+    game.ball.opponentBounceCount = 0;
+    game.awardPoint();
+    game.anotherBall();
+  }{
+
   }
 
   if (game.score == -10) {
@@ -57,4 +64,3 @@ let draw = () => {
     game.animationLoop = window.requestAnimationFrame(draw);
   }
 }
-game.animationLoop = window.requestAnimationFrame(draw)

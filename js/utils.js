@@ -26,8 +26,8 @@ let utils = {
 
     setCanvas: (canvas) => {
       utils.PROJECTOR.canvas = canvas;
-      utils.PROJECTOR.viewerPosition.x = -canvas.width / 2;
-      utils.PROJECTOR.viewerPosition.y = -canvas.height/1.35;
+      utils.PROJECTOR.viewerPosition.x = -canvas.width *0.5;
+      utils.PROJECTOR.viewerPosition.y = -canvas.width * 0.4;
     },
 
     get2d: (x, y, z) => {

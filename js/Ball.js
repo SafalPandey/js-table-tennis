@@ -23,6 +23,7 @@ export class Ball {
 
     this.shadowY = this.board.y;
     this.bounceCount = 0;
+    this.opponentBounceCount = 0;
 
   }
 
@@ -52,11 +53,17 @@ export class Ball {
   }
 
   reflect() {
-    this.dz *=1.25;
+    this.dz *=1.5;
     this.dz = -this.dz;
+    if (this.dy > 0) {
+      this.dy = -this.dy;
+    }
+    this.maxY = this.board.y;
   }
   bounce() {
     this.dy = -this.dy;
+
+    console.log(this.bounceCount,this.opponentBounceCount);
   }
   sideCheck() {
     this.dx = -this.dx;
@@ -66,6 +73,10 @@ export class Ball {
   fall(){
     this.maxY = 500;
   }
+  rise(){
+    this.maxY = this.board.y - this.r;
+  }
+
   updatePosition() {
 
     this.x += this.dx;
@@ -80,12 +91,22 @@ export class Ball {
     // }
 
     if (this.y > this.maxY - this.r) {
-      this.bounceCount++;
+      if (this.z < this.board.length / 2) {
+        this.bounceCount++;
+
+
+      }
+      if (this.z > this.board.length / 2) {
+        this.opponentBounceCount++;
+
+      }
       this.bounce();
     }
 
     if (this.z < this.board.z || this.z > this.board.z + this.board.length || this.x < -this.board.width || this.x > this.board.width) {
       this.fall();
+    }else {
+      this.rise();
     }
 
 
@@ -93,6 +114,7 @@ export class Ball {
     // if (this.z < -100) this.reflect();
     if (this.z > this.board.length) {
       this.bounceCount = 0;
+      console.log("board oppo");
       this.reflect();
     }
   }

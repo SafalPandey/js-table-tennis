@@ -95,8 +95,8 @@ let utils = {
 
     setCanvas: (canvas) => {
       utils.PROJECTOR.canvas = canvas;
-      utils.PROJECTOR.viewerPosition.x = -canvas.width / 2;
-      utils.PROJECTOR.viewerPosition.y = -canvas.height/1.35;
+      utils.PROJECTOR.viewerPosition.x = -canvas.width *0.5;
+      utils.PROJECTOR.viewerPosition.y = -canvas.width * 0.4;
     },
 
     get2d: (x, y, z) => {
@@ -367,6 +367,7 @@ class Ball {
 
     this.shadowY = this.board.y;
     this.bounceCount = 0;
+    this.opponentBounceCount = 0;
 
   }
 
@@ -396,11 +397,17 @@ class Ball {
   }
 
   reflect() {
-    this.dz *=1.25;
+    this.dz *=1.5;
     this.dz = -this.dz;
+    if (this.dy > 0) {
+      this.dy = -this.dy;
+    }
+    this.maxY = this.board.y;
   }
   bounce() {
     this.dy = -this.dy;
+
+    console.log(this.bounceCount,this.opponentBounceCount);
   }
   sideCheck() {
     this.dx = -this.dx;
@@ -410,6 +417,10 @@ class Ball {
   fall(){
     this.maxY = 500;
   }
+  rise(){
+    this.maxY = this.board.y - this.r;
+  }
+
   updatePosition() {
 
     this.x += this.dx;
@@ -424,12 +435,22 @@ class Ball {
     // }
 
     if (this.y > this.maxY - this.r) {
-      this.bounceCount++;
+      if (this.z < this.board.length / 2) {
+        this.bounceCount++;
+
+
+      }
+      if (this.z > this.board.length / 2) {
+        this.opponentBounceCount++;
+
+      }
       this.bounce();
     }
 
     if (this.z < this.board.z || this.z > this.board.z + this.board.length || this.x < -this.board.width || this.x > this.board.width) {
       this.fall();
+    }else {
+      this.rise();
     }
 
 
@@ -437,6 +458,7 @@ class Ball {
     // if (this.z < -100) this.reflect();
     if (this.z > this.board.length) {
       this.bounceCount = 0;
+      console.log("board oppo");
       this.reflect();
     }
   }
@@ -475,8 +497,8 @@ class Bat {
   drawBat(hasServed) {
 
 
-    if(this.x < this.board.x - this.board.width) this.x = this.board.x - this.board.width
-    if(this.x > this.board.x + this.board.width) this.x = this.board.x + this.board.width
+    if(this.isOpponent && this.x < this.board.x - this.board.width) this.x = this.board.x - this.board.width
+    if(this.isOpponent && this.x > this.board.x + this.board.width) this.x = this.board.x + this.board.width
     // if (this.z < -25) this.z = -25;
     if (!this.isOpponent && this.z > this.board.length/2) this.z = this.board.length/2;
     this.point2d = utils.PROJECTOR.get2d(this.x, this.y, this.z);
@@ -502,7 +524,7 @@ class Bat {
 
   }
   makeBatPaddle(hasServed) {
-    this.ctx.arc(this.point2d.x2d, this.point2d.y2d,utils.PROJECTOR.get2dLength( this.r,this.z), Math.PI / 2, Math.PI * 2);
+    this.ctx.arc(this.point2d.x2d, this.point2d.y2d,Math.abs(utils.PROJECTOR.get2dLength( this.r,this.z)), Math.PI / 2, Math.PI * 2);
     // this.ctx.fillStyle = "#9c0710";
     if (hasServed) {
       this.ctx.fillStyle = "rgba(156,7,16,1)";
@@ -535,6 +557,7 @@ class Bat {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "draw", function() { return draw; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Board_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Ball_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Bat_js__ = __webpack_require__(3);
@@ -547,7 +570,7 @@ const utils = __webpack_require__(0)
 
 
 let game = new __WEBPACK_IMPORTED_MODULE_3__Game_js__["a" /* Game */]();
-game.init();
+// game.init();
 let draw = () => {
   if (game.hasServed) game.timer++;
   game.drawBackground();
@@ -560,9 +583,9 @@ let draw = () => {
 
   game.bat.drawBat(game.hasServed);
 
-  if (game.ball.z > game.board.length/2) {
-
+  if (game.ball.z > game.board.length/2 && game.ball.opponentBounceCount > 0) {
     game.opponentBat.x = game.ball.x;
+    game.opponentBat.z = game.ball.z;
   }
   // game.opponentBat.y = game.ball.y;
   game.opponentBat.drawBat(game.hasServed);
@@ -572,15 +595,22 @@ let draw = () => {
   if (game.hasServed && game.ball.bounceCount != 0 && game.ball.z > game.bat.z - 10 && game.ball.z < game.bat.z && game.ball.x > game.bat.x - game.bat.r && game.ball.x < game.bat.x + game.bat.r && game.ball.y > game.bat.y - game.bat.r ) {
     console.log("reflected");
     game.ball.bounceCount = 0;
-    game.awardPoint();
-
+    game.ball.opponentBounceCount = 0;
     game.ball.reflect();
-    game.ball.z = 10;
+    // game.ball.z = 10;
   }
   if (game.ball.bounceCount >= 5) {
     game.ball.bounceCount = 0;
+    game.ball.opponentBounceCount = 0;
     game.removePoint();
     game.anotherBall();
+  } else if (game.ball.opponentBounceCount > 5) {
+    game.ball.bounceCount = 0;
+    game.ball.opponentBounceCount = 0;
+    game.awardPoint();
+    game.anotherBall();
+  }{
+
   }
 
   if (game.score == -10) {
@@ -590,7 +620,6 @@ let draw = () => {
     game.animationLoop = window.requestAnimationFrame(draw);
   }
 }
-game.animationLoop = window.requestAnimationFrame(draw)
 
 
 /***/ }),
@@ -601,6 +630,8 @@ game.animationLoop = window.requestAnimationFrame(draw)
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Board_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Ball_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Bat_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__src_app_js__ = __webpack_require__(4);
+
 
 
 
@@ -611,7 +642,7 @@ class Game {
     this.canvas = document.getElementById('gameCanvas');
     // this.canvas.style.border = "#000 1px solid"
     this.canvas.width = window.innerWidth;
-    this.canvas.height = (window.innerHeight - 4);
+    this.canvas.height = window.innerHeight - 4;
     utils.PROJECTOR.setCanvas(this.canvas);
     this.ctx = this.canvas.getContext('2d');
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -622,26 +653,47 @@ class Game {
     this.bgImg.onload = () => {
       this.bgPattern = this.ctx.createPattern(this.bgImg, 'repeat');
       this.ctx.fillStyle = this.bgPattern;
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
-    this.bgRadius = this.canvas.width * 1.2;
-    console.log(this.canvas.height,this.canvas.width * 0.5625);
+    this.bgRadius = Math.floor(this.canvas.width * 1.2);
     this.bgCenter = {
-      x : this.canvas.width / 2,
+      x: this.canvas.width / 2,
       y: this.canvas.width * 1.4
       // y: this.canvas.height * 2.8
 
     }
-    this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius-100);
+    this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius - 100);
     this.bgGradient.addColorStop(0, '#030');
     this.bgGradient.addColorStop(1, '#070');
 
     this.gravity = 0.006;
     this.isStarted = false;
     this.hasServed = false;
+
+    this.startButton = {
+      x: 1.5 * this.canvas.width / 4,
+      y: this.canvas.height / 2,
+      width: this.canvas.width / 4,
+      height: this.canvas.width / 8,
+      text: "Start Game",
+    };
+    this.restartButton = {
+      x: 1.5 * this.canvas.width / 4,
+      y: this.canvas.height / 2,
+      width: this.canvas.width / 4,
+      height: this.canvas.width / 8,
+      text: "Play Again",
+    };
+
+    this.button = this.startButton;
+    this.drawButton();
+    console.log(this.button);
+    this.canvas.addEventListener('click', (e) => {
+      this.handleClick(e)
+    }, false);
   }
 
   init() {
+    window.cancelAnimationFrame(this.animationLoop);
     this.board = new __WEBPACK_IMPORTED_MODULE_0__Board_js__["a" /* Board */](this.canvas, this.ctx);
     this.bat = new __WEBPACK_IMPORTED_MODULE_2__Bat_js__["a" /* Bat */](this.canvas, this.ctx, this.board);
     this.opponentBat = new __WEBPACK_IMPORTED_MODULE_2__Bat_js__["a" /* Bat */](this.canvas, this.ctx, this.board);
@@ -649,7 +701,12 @@ class Game {
     this.opponentBat.isOpponent = true;
     this.ball = new __WEBPACK_IMPORTED_MODULE_1__Ball_js__["a" /* Ball */](this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 10);
     this.timer = 0;
-    this.score = 0;
+    this.playerScore = 0;
+    this.opponentScore = 0;
+    // this.canvas.style.cursor = 'none';
+    this.canvas.removeEventListener('click', (e) => {
+      this.handleClick(e)
+    }, false);
 
     this.canvas.addEventListener("mouseover", (evt) => {
       this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
@@ -670,7 +727,6 @@ class Game {
 
     }, false)
 
-
     this.canvas.addEventListener('touchmove', (evt) => {
       evt.preventDefault();
       let touch = evt.touches[0];
@@ -679,25 +735,34 @@ class Game {
       this.bat.y = this.bat.point3d.y;
       this.bat.z = this.bat.point3d.z;
     }, false)
-
     this.isStarted = true;
+    this.animationLoop = window.requestAnimationFrame(__WEBPACK_IMPORTED_MODULE_3__src_app_js__["draw"])
   }
-
+  drawButton() {
+    this.ctx.fillStyle = "green";
+    this.ctx.fillRect(this.button.x, this.button.y, this.button.width, this.button.height);
+    this.ctx.fillStyle = "white";
+    this.ctx.font = "30px Arial";
+    this.ctx.fillText(this.button.text, this.button.x + 20, this.button.y + 50);
+  }
+  handleClick(evt) {
+    if (evt.clientX > this.button.x && evt.clientX < this.button.x + this.button.width && evt.clientY > this.button.y && evt.clientY < this.button.y + this.button.height) {
+      this.init();
+    }
+  }
   serve() {
     this.ball.dx = 0.1 * this.bat.dx
     this.ball.dz = 0.1 * this.bat.dz;
     this.hasServed = true;
     this.timer = 0;
   }
-
-
-
-
   awardPoint() {
-    this.score++;
+    this.playerScore++;
+    this.hasServed = false;
+
   }
   removePoint() {
-    this.score--;
+    this.opponentScore++;
     this.hasServed = false;
   }
 
@@ -728,32 +793,54 @@ class Game {
     this.ctx.fillStyle = "#fff";
     this.ctx.strokeStyle = "#000";
     this.ctx.font = "30px Arial";
-    this.ctx.fillText("Score: " + this.score, 30, 30);
+    this.ctx.fillText("Your Score: " + this.playerScore, 30, 30);
+    this.ctx.fillStyle = "#f99";
+    this.ctx.fillText("Opponent's Score: " + this.opponentScore, this.canvas.width - 500, 30);
+
   }
 
   over() {
-    this.canvas.removeEventListener('mousemove', (evt) => {
-      evt.preventDefault();
-      if (evt.clientX - this.canvas.width / 2 > -this.board.width && evt.clientX - this.canvas.width / 2 < this.board.width) {
 
-        this.bat.x = evt.clientX - this.canvas.width / 2;
-      }
-      if (evt.clientY < this.canvas.height - 50)
-        this.bat.z = this.canvas.height - evt.clientY - 10;
-    }, false)
-    this.canvas.removeEventListener('touchmove', (evt) => {
-      evt.preventDefault();
-      let touch = evt.touches[0];
-      console.log("touchM", touch.pageX, touch.pageY / 2);
-
-      this.bat.x = touch.pageX - this.canvas.width / 2;
-      this.bat.z = this.canvas.height - touch.pageY - 10;
-    }, false)
     this.board = null;
     this.bat = null;
     this.ball = null;
     this.point = 0;
+    this.canvas.style.cursor = "auto";
+    this.canvas.removeEventListener("mouseover", (evt) => {
+      this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
+      this.bat.x = this.bat.point3d.x;
+      this.bat.y = this.bat.point3d.y;
+      this.bat.z = this.bat.point3d.z;
 
+      this.bat.lastX = this.bat.point3d.x;
+      this.bat.lastZ = this.bat.point3d.z;
+    }, false);
+
+    this.canvas.removeEventListener('mousemove', (evt) => {
+      evt.preventDefault();
+      this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
+      this.bat.x = this.bat.point3d.x;
+      this.bat.y = this.bat.point3d.y;
+      this.bat.z = this.bat.point3d.z;
+
+    }, false)
+
+
+    this.canvas.removeEventListener('touchmove', (evt) => {
+      evt.preventDefault();
+      let touch = evt.touches[0];
+      this.bat.point3d = utils.PROJECTOR.get3d(touch.pageX, touch.pageY);
+      this.bat.x = this.bat.point3d.x;
+      this.bat.y = this.bat.point3d.y;
+      this.bat.z = this.bat.point3d.z;
+    }, false)
+
+    this.button = this.restartButton;
+    // this.canvas.addEventListener('click', (e) => {
+    //   this.handleClick(e)
+    // }, false);
+    this.drawButton();
+    this.hasServed=false;
     this.isStarted = false;
     window.cancelAnimationFrame(this.animationLoop);
   }
