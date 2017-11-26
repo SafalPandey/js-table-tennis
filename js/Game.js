@@ -37,8 +37,8 @@ export class Game {
 
     }
     this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius - 100);
-    this.bgGradient.addColorStop(0, '#030');
-    this.bgGradient.addColorStop(1, '#070');
+    this.bgGradient.addColorStop(0, '#465069');
+    this.bgGradient.addColorStop(1, '#78909c');
 
     this.gravity = 0.006;
     this.isStarted = false;
@@ -126,8 +126,8 @@ export class Game {
     }
   }
   serve() {
-    this.ball.dx = 0.1 * this.bat.dx
-    this.ball.dz = 0.1 * this.bat.dz;
+    this.ball.dx = 0.2 * this.bat.dx
+    this.ball.dz = 0.2 * this.bat.dz;
     this.hasServed = true;
     this.timer = 0;
   }
@@ -146,6 +146,8 @@ export class Game {
 
     this.ball = new Ball(this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 5);
     this.timer = 0;
+
+    this.opponentBat.z = this.board.length;
   }
   drawBackground() {
 

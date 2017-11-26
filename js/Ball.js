@@ -19,7 +19,7 @@ export class Ball {
     this.dz = 0;
 
     this.maxY = this.board.y;
-
+    this.netPosition = this.board.length/2;
 
     this.shadowY = this.board.y;
     this.bounceCount = 0;
@@ -52,12 +52,8 @@ export class Ball {
     this.ctx.closePath();
   }
 
-  reflect() {
-    this.dz *=1.5;
-    this.dz = -this.dz;
-    if (this.dy > 0) {
-      this.dy = -this.dy;
-    }
+  reflect(dzOther) {
+    this.dz = dzOther;
     this.maxY = this.board.y;
   }
   bounce() {
@@ -89,16 +85,16 @@ export class Ball {
     // if (this.x < this.board.x - this.board.width - this.r) {
     //   this.sideCheck();
     // }
+    if (this.z == this.netPosition && this.x > -this.board.width && this.x < this.board.width && this.y < this.board.y && this.y > this.board.netHeight ) {
+      this.reflect(-this.dz)
+    }
 
     if (this.y > this.maxY - this.r) {
-      if (this.z < this.board.length / 2) {
+      if (this.z <this.netPosition) {
         this.bounceCount++;
-
-
       }
-      if (this.z > this.board.length / 2) {
+      if (this.z >this.netPosition) {
         this.opponentBounceCount++;
-
       }
       this.bounce();
     }
@@ -112,11 +108,11 @@ export class Ball {
 
 
     // if (this.z < -100) this.reflect();
-    if (this.z > this.board.length) {
-      this.bounceCount = 0;
-      console.log("board oppo");
-      this.reflect();
-    }
+    // if (this.z > this.board.length) {
+    //   this.bounceCount = 0;
+    //   console.log("board oppo");
+    //   this.reflect(this.dz * 1.25);
+    // }
   }
 
 }

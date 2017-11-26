@@ -1,7 +1,7 @@
 const utils = require('./utils.js');
 
 export class Board {
-  constructor(canvas, ctx, fov) {
+  constructor(canvas, ctx) {
 
     this.canvas = canvas;
     this.ctx = ctx;
@@ -15,6 +15,8 @@ export class Board {
     this.thickness = 10 / 400 * this.canvas.width / 2; //yMax
     this.length = 720 / 400 * this.canvas.width / 2; //zMax
 
+    this.netHeight = this.y - 55/400 * this.width;
+
     this.frontLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z);
     this.frontRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z);
     this.backRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z + this.length);
@@ -25,9 +27,15 @@ export class Board {
     this.frontRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z);
 
     this.middleRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z + this.length/2);
-    this.middleRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y - 55/400 * this.width, this.z + this.length/2);
+    this.middleRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.netHeight, this.z + this.length/2);
     this.middleLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z + this.length/2);
-    this.middleLeftTopPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y - 55/400 * this.width, this.z + this.length/2);
+    this.middleLeftTopPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.netHeight, this.z + this.length/2);
+
+    this.singlePlayerMiddleRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z + this.length/2);
+    this.singlePlayerMiddleRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y - this.length/4 , this.z + this.length/2);
+    this.singlePlayerMiddleLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z + this.length/2);
+    this.singlePlayerMiddleLeftTopPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y - this.length/4, this.z + this.length/2);
+
 
 
     this.innerSurfaceFrontLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width + 10 / 400 * this.width, this.y, this.z + 10 / 400 * this.width);
@@ -53,7 +61,7 @@ export class Board {
 
     this.drawBoard();
   }
-  drawBoard() {
+  drawBoard(isSingle) {
 
     //outer white surface drawing
     this.ctx.beginPath();
@@ -61,7 +69,7 @@ export class Board {
     this.makeOuterWhiteSurface();
     this.ctx.stroke();
     this.ctx.fillStyle = "white";
-    this.ctx.fill()
+    this.ctx.fill();
     this.ctx.closePath();
     //inner surface drawing
     this.ctx.beginPath();
@@ -77,7 +85,7 @@ export class Board {
     //center border path
     this.makeCenterBorder();
     this.ctx.fillStyle = "white";
-    this.ctx.fill()
+    this.ctx.fill();
     this.ctx.closePath();
 
     //board-thickness drawing
@@ -86,7 +94,7 @@ export class Board {
     this.makeBoardThickness();
     this.ctx.stroke();
     this.ctx.fillStyle = "#122c5f";
-    this.ctx.fill()
+    this.ctx.fill();
     this.ctx.closePath();
     // this.ctx.arc(utils.PROJECTOR.get2d(this.x, this.y, this.z).x2d, utils.PROJECTOR.get2d(this.x, this.y, this.z).y2d, 10, 0, 2 * Math.PI);
     // this.ctx.fillStyle = "red";
@@ -97,6 +105,15 @@ export class Board {
     this.ctx.fillStyle = this.netPattern;
     this.ctx.fill();
     this.ctx.closePath();
+
+    // if (isSingle) {
+    //   this.ctx.beginPath();
+    //   this.makeOtherHalfVertical();
+    //   this.ctx.stroke();
+    //   this.ctx.fillStyle = "#24529b"
+    //   this.ctx.fill();
+    //   this.ctx.closePath();
+    // }
     // this.ctx.fill();
   }
   makeOuterWhiteSurface() {
@@ -145,5 +162,11 @@ export class Board {
     this.ctx.lineTo(this.frontRightBottomPoint2d.x2d, this.frontRightBottomPoint2d.y2d);
     //front-right-top point
     this.ctx.lineTo(this.frontRightTopPoint2d.x2d, this.frontRightTopPoint2d.y2d);
+  }
+  makeOtherHalfVertical(){
+    this.ctx.moveTo(this.singlePlayerMiddleLeftPoint2d.x2d,this.singlePlayerMiddleLeftPoint2d.y2d)
+    this.ctx.lineTo(this.singlePlayerMiddleRightPoint2d.x2d,this.singlePlayerMiddleRightPoint2d.y2d)
+    this.ctx.lineTo(this.singlePlayerMiddleRightPoint2d.x2d,this.singlePlayerMiddleRightTopPoint2d.y2d)
+    this.ctx.lineTo(this.singlePlayerMiddleLeftPoint2d.x2d,this.singlePlayerMiddleLeftTopPoint2d.y2d)
   }
 }
