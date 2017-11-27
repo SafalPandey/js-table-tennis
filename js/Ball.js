@@ -19,7 +19,6 @@ export class Ball {
     this.dz = 0;
 
     this.maxY = this.board.y;
-    this.netPosition = this.board.length/2;
 
     this.shadowY = this.board.y;
     this.bounceCount = 0;
@@ -85,15 +84,15 @@ export class Ball {
     // if (this.x < this.board.x - this.board.width - this.r) {
     //   this.sideCheck();
     // }
-    if (this.z == this.netPosition && this.x > -this.board.width && this.x < this.board.width && this.y < this.board.y && this.y > this.board.netHeight ) {
+    if (this.z == this.board.netPosition && this.x > -this.board.width && this.x < this.board.width && this.y < this.board.y && this.y > this.board.netHeight ) {
       this.reflect(-this.dz)
     }
 
     if (this.y > this.maxY - this.r) {
-      if (this.z <this.netPosition) {
+      if (this.z <this.board.netPosition) {
         this.bounceCount++;
       }
-      if (this.z >this.netPosition) {
+      if (this.z >this.board.netPosition) {
         this.opponentBounceCount++;
       }
       this.bounce();

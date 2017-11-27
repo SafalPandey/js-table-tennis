@@ -292,7 +292,10 @@ class Board {
     this.thickness = 10 / 400 * this.canvas.width / 2; //yMax
     this.length = 720 / 400 * this.canvas.width / 2; //zMax
 
-    this.netHeight = this.y - 55/400 * this.width;
+    this.netHeight = this.y - 55 / 400 * this.width;
+    this.netPosition = this.length / 2;
+    this.netHeight = his.y - this.length / 4
+    this.borderWidth = 10 / 400 * this.width;
 
     this.frontLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z);
     this.frontRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z);
@@ -303,23 +306,21 @@ class Board {
     this.frontRightBottomPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y + this.thickness, this.z);
     this.frontRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z);
 
-    this.middleRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z + this.length/2);
-    this.middleRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.netHeight, this.z + this.length/2);
-    this.middleLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z + this.length/2);
-    this.middleLeftTopPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.netHeight, this.z + this.length/2);
+    this.middleRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z + this.netPosition);
+    this.middleRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.netHeight, this.z + this.netPosition);
+    this.middleLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z + this.netPosition);
+    this.middleLeftTopPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.netHeight, this.z + this.netPosition);
 
-    this.singlePlayerMiddleRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z + this.length/2);
-    this.singlePlayerMiddleRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y - this.length/4 , this.z + this.length/2);
-    this.singlePlayerMiddleLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z + this.length/2);
-    this.singlePlayerMiddleLeftTopPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y - this.length/4, this.z + this.length/2);
+    this.singlePlayerMiddleRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.y, this.z + this.netPosition);
+    this.singlePlayerMiddleRightTopPoint2d = utils.PROJECTOR.get2d(this.x + this.width, this.netHeight, this.z + this.netPosition);
+    this.singlePlayerMiddleLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z + this.netPosition);
+    this.singlePlayerMiddleLeftTopPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.netHeight, this.z + this.netPosition);
 
-
-
-    this.innerSurfaceFrontLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width + 10 / 400 * this.width, this.y, this.z + 10 / 400 * this.width);
-    this.innerSurfaceFrontRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width - 10 / 400 * this.width, this.y, this.z + 10 / 400 * this.width);
-    this.innerSurfaceBackRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width - 10 / 400 * this.width, this.y, this.z + this.length - 10 / 400 * this.width);
-    this.innerSurfaceBackLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width + 10 / 400 * this.width, this.y, this.z + this.length - 10 / 400 * this.width);
-    this.innerSurfaceFrontLeftoint2d = utils.PROJECTOR.get2d(this.x - this.width + 10 / 400 * this.width, this.y, this.z + 10 / 400 * this.width);
+    this.innerSurfaceFrontLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width + this.borderWidth, this.y, this.z + this.borderWidth);
+    this.innerSurfaceFrontRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width - this.borderWidth, this.y, this.z + this.borderWidth);
+    this.innerSurfaceBackRightPoint2d = utils.PROJECTOR.get2d(this.x + this.width - this.borderWidth, this.y, this.z + this.length - this.borderWidth);
+    this.innerSurfaceBackLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width + this.borderWidth, this.y, this.z + this.length - this.borderWidth);
+    this.innerSurfaceFrontLeftoint2d = utils.PROJECTOR.get2d(this.x - this.width + this.borderWidth, this.y, this.z + this.borderWidth);
 
 
     this.centerBorderFrontLeftPoint2d = utils.PROJECTOR.get2d(this.x - 5 / 400 * this.width, this.y, this.z);
@@ -400,11 +401,11 @@ class Board {
     this.ctx.lineTo(this.backLeftPoint2d.x2d, this.backLeftPoint2d.y2d);
     this.ctx.lineTo(this.frontLeftoint2d.x2d, this.frontLeftoint2d.y2d);
   }
-  makeNet(){
-    this.ctx.moveTo(this.middleLeftTopPoint2d.x2d,this.middleLeftTopPoint2d.y2d)
-    this.ctx.lineTo(this.middleRightTopPoint2d.x2d,this.middleRightTopPoint2d.y2d)
-    this.ctx.lineTo(this.middleRightTopPoint2d.x2d,this.middleRightPoint2d.y2d)
-    this.ctx.lineTo(this.middleLeftTopPoint2d.x2d,this.middleLeftPoint2d.y2d)
+  makeNet() {
+    this.ctx.moveTo(this.middleLeftTopPoint2d.x2d, this.middleLeftTopPoint2d.y2d)
+    this.ctx.lineTo(this.middleRightTopPoint2d.x2d, this.middleRightTopPoint2d.y2d)
+    this.ctx.lineTo(this.middleRightTopPoint2d.x2d, this.middleRightPoint2d.y2d)
+    this.ctx.lineTo(this.middleLeftTopPoint2d.x2d, this.middleLeftPoint2d.y2d)
   }
   makeInnerSurface() {
     //front-left point
@@ -440,11 +441,11 @@ class Board {
     //front-right-top point
     this.ctx.lineTo(this.frontRightTopPoint2d.x2d, this.frontRightTopPoint2d.y2d);
   }
-  makeOtherHalfVertical(){
-    this.ctx.moveTo(this.singlePlayerMiddleLeftPoint2d.x2d,this.singlePlayerMiddleLeftPoint2d.y2d)
-    this.ctx.lineTo(this.singlePlayerMiddleRightPoint2d.x2d,this.singlePlayerMiddleRightPoint2d.y2d)
-    this.ctx.lineTo(this.singlePlayerMiddleRightPoint2d.x2d,this.singlePlayerMiddleRightTopPoint2d.y2d)
-    this.ctx.lineTo(this.singlePlayerMiddleLeftPoint2d.x2d,this.singlePlayerMiddleLeftTopPoint2d.y2d)
+  makeOtherHalfVertical() {
+    this.ctx.moveTo(this.singlePlayerMiddleLeftPoint2d.x2d, this.singlePlayerMiddleLeftPoint2d.y2d)
+    this.ctx.lineTo(this.singlePlayerMiddleRightPoint2d.x2d, this.singlePlayerMiddleRightPoint2d.y2d)
+    this.ctx.lineTo(this.singlePlayerMiddleRightPoint2d.x2d, this.singlePlayerMiddleRightTopPoint2d.y2d)
+    this.ctx.lineTo(this.singlePlayerMiddleLeftPoint2d.x2d, this.singlePlayerMiddleLeftTopPoint2d.y2d)
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Board;
@@ -477,7 +478,6 @@ class Ball {
     this.dz = 0;
 
     this.maxY = this.board.y;
-    this.netPosition = this.board.length/2;
 
     this.shadowY = this.board.y;
     this.bounceCount = 0;
@@ -543,15 +543,15 @@ class Ball {
     // if (this.x < this.board.x - this.board.width - this.r) {
     //   this.sideCheck();
     // }
-    if (this.z == this.netPosition && this.x > -this.board.width && this.x < this.board.width && this.y < this.board.y && this.y > this.board.netHeight ) {
+    if (this.z == this.board.netPosition && this.x > -this.board.width && this.x < this.board.width && this.y < this.board.y && this.y > this.board.netHeight ) {
       this.reflect(-this.dz)
     }
 
     if (this.y > this.maxY - this.r) {
-      if (this.z <this.netPosition) {
+      if (this.z <this.board.netPosition) {
         this.bounceCount++;
       }
-      if (this.z >this.netPosition) {
+      if (this.z >this.board.netPosition) {
         this.opponentBounceCount++;
       }
       this.bounce();
@@ -742,7 +742,7 @@ class Game {
     this.timer = 0;
     this.playerScore = 0;
     this.opponentScore = 0;
-    // this.canvas.style.cursor = 'none';
+    this.canvas.style.cursor = 'none';
     this.canvas.removeEventListener('click', (e) => {
       this.handleClick(e)
     }, false);

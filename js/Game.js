@@ -78,7 +78,7 @@ export class Game {
     this.timer = 0;
     this.playerScore = 0;
     this.opponentScore = 0;
-    // this.canvas.style.cursor = 'none';
+    this.canvas.style.cursor = 'none';
     this.canvas.removeEventListener('click', (e) => {
       this.handleClick(e)
     }, false);
