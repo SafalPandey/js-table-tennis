@@ -185,11 +185,12 @@ module.exports = utils;
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "draw", function() { return draw; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Board_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Ball_js__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Bat_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Game_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Game_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Sound_js__ = __webpack_require__(5);
+
 
 
 
@@ -199,75 +200,6 @@ const utils = __webpack_require__(0)
 
 let game = new __WEBPACK_IMPORTED_MODULE_3__Game_js__["a" /* Game */]();
 // game.init();
-let draw = () => {
-  if (game.hasServed) game.timer++;
-  game.drawBackground();
-  game.drawScore();
-  game.board.drawBoard();
-  if (game.ball.y < game.board.y) game.ball.dy += game.gravity * game.timer;
-  // else game.ball.dy = 0;
-  game.ball.updatePosition();
-
-  if(game.ball.z > -200) game.ball.draw();
-
-  game.bat.drawBat(game.hasServed);
-
-  if (game.ball.z > game.board.length/2) {
-    game.opponentBat.x = game.ball.x;
-    if (game.ball.opponentBounceCount > 0) {
-      game.opponentBat.z = game.ball.z;
-
-      console.log("gt0",game.opponentBat.dz);
-    if (Math.abs(game.opponentBat.dz) > Math.abs(game.ball.dz * 1.2)) {
-      game.ball.reflect(game.ball.dz * -1.1);
-
-      console.log(game.opponentBat.dz);
-    }else {
-      game.ball.reflect(game.ball.dz * 1.1);
-      // game.ball.reflect(game.opponentBat.dz);
-      console.log("lt0",game.opponentBat.dz);
-
-    }
-  }
-    // game.ball.opponentBounceCount = 0;
-    // game.ball.bounceCount = 0;
-    // if (game.ball.z >= game.board.length) {
-    //   game.opponentBat.y = game.ball.y;
-    // }
-  }
-  // game.opponentBat.y = game.ball.y;
-  game.opponentBat.drawBat(game.hasServed);
-
-  if (!game.hasServed) game.ball.x = game.bat.x
-  if (!game.hasServed && game.bat.dz > 0 && game.bat.z > game.ball.z) game.serve();
-  if (game.hasServed && game.ball.bounceCount != 0 && game.ball.z < game.bat.z && game.ball.x > game.bat.x - game.bat.r && game.ball.x < game.bat.x + game.bat.r && game.ball.y > game.bat.y - game.bat.r ) {
-    console.log("reflected");
-    game.ball.bounceCount = 0;
-    game.ball.opponentBounceCount = 0;
-    game.ball.reflect(game.ball.dz * -1);
-    // game.ball.z = 10;
-  }
-  if (game.ball.bounceCount >= 5) {
-    game.ball.bounceCount = 0;
-    game.ball.opponentBounceCount = 0;
-    game.removePoint();
-    game.anotherBall();
-  } else if (game.ball.opponentBounceCount > 5) {
-    game.ball.bounceCount = 0;
-    game.ball.opponentBounceCount = 0;
-    game.awardPoint();
-    game.anotherBall();
-  }{
-
-  }
-
-  if (game.score == -10) {
-    game.over();
-  } else {
-
-    game.animationLoop = window.requestAnimationFrame(draw);
-  }
-}
 
 
 /***/ }),
@@ -447,6 +379,13 @@ class Board {
     this.ctx.lineTo(this.singlePlayerMiddleRightPoint2d.x2d, this.singlePlayerMiddleRightTopPoint2d.y2d)
     this.ctx.lineTo(this.singlePlayerMiddleLeftPoint2d.x2d, this.singlePlayerMiddleLeftTopPoint2d.y2d)
   }
+
+  checkPointBound(x2d,y2d,y3d){
+    if(x2d > this.frontLeftPoint2d.x2d && y2d < this.frontLeftPoint2d.y2d && x2d < this.backRightPoint2d.x2d && y2d > this.backRightPoint2d.y2d && y3d > this.y){
+      console.log("isbounded");
+      return true;
+    }
+  }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Board;
 
@@ -487,16 +426,18 @@ class Ball {
 
   draw() {
 
-    if (this.z < 0) this.shadowY = 600;
-    else this.shadowY = this.board.y;
-
     this.center2d = utils.PROJECTOR.get2d(this.x, this.y, this.z);
     this.shadow = utils.PROJECTOR.get2d(this.x, this.maxY, this.z);
     let radius2d = utils.PROJECTOR.get2dLength(this.r, this.z);
+
+    if (this.board.checkPointBound(this.center2d.x2d,this.center2d.y2d,this.y)) {
+      return 0;
+    }
+
     //shadow
     this.ctx.beginPath();
     this.ctx.arc(this.shadow.x2d, this.shadow.y2d, radius2d, 0, Math.PI * 2);
-    this.ctx.fillStyle = "rgba(68,68,68,0.5)";
+    this.ctx.fillStyle = "rgba(68,68,68,0.8)";
     this.ctx.fill();
     this.ctx.closePath();
 
@@ -511,7 +452,13 @@ class Ball {
   }
 
   reflect(dzOther) {
-    this.dz = dzOther;
+    if(Math.abs(dzOther) > 30){
+      this.dz = (dzOther/Math.abs(dzOther)) * 30;
+    }
+    else {
+
+      this.dz = dzOther;
+    }
     this.maxY = this.board.y;
   }
   bounce() {
@@ -601,6 +548,7 @@ class Bat {
     this.mouseX = 0;
     this.mouseY = 0;
 
+    this.effectAlpha = 0;
     this.isOpponent= false;
 
   }
@@ -628,7 +576,7 @@ class Bat {
     // console.log(this.dz);
     // this.ctx.rotate(-Math.PI/2);
     // this.ctx.translate(-this.point2d.x2d,-this.point2d.y2d)
-    this.ctx.restore();
+    // this.ctx.restore();
   }
   makeBatShadow(){
 
@@ -656,6 +604,13 @@ class Bat {
     this.ctx.fill();
 
   }
+  showEffect(x,y,z){
+    let point2d = utils.PROJECTOR.get3d(this.x,this.y,this.z);
+    this.ctx.arc(point2d.x2d,point2d.y2d,20,20,0,Math.PI*2);
+    this.ctx.fillStyle = "rgba(236,0,0,"+this.effectAlpha+")";
+    this.ctx.fill();
+
+  }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Bat;
 
@@ -666,10 +621,43 @@ class Bat {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+class Sound {
+
+  constructor(src) {
+    this.sound = document.createElement('audio');
+    this.sound.src = src;
+    this.sound.setAttribute('preload', 'auto');
+    this.sound.setAttribute('controls', 'none');
+    this.sound.style.display = 'none';
+
+    document.body.appendChild(this.sound);
+
+    this.play = function() {
+      this.sound.play();
+    }
+
+    this.stop = function() {
+      this.sound.pause();
+    }
+  }
+
+
+}
+/* unused harmony export Sound */
+
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Board_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Ball_js__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Bat_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__src_app_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Sound_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__src_app_js__ = __webpack_require__(1);
+
 
 
 
@@ -701,8 +689,8 @@ class Game {
 
     }
     this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius - 100);
-    this.bgGradient.addColorStop(0, '#465069');
-    this.bgGradient.addColorStop(1, '#78909c');
+    this.bgGradient.addColorStop(0, '#904645');
+    this.bgGradient.addColorStop(1, '#ad5452');
 
     this.gravity = 0.006;
     this.isStarted = false;
@@ -725,7 +713,6 @@ class Game {
 
     this.button = this.startButton;
     this.drawButton();
-    console.log(this.button);
     this.canvas.addEventListener('click', (e) => {
       this.handleClick(e)
     }, false);
@@ -774,8 +761,11 @@ class Game {
       this.bat.y = this.bat.point3d.y;
       this.bat.z = this.bat.point3d.z;
     }, false)
+    this.hasMissed = false;
     this.isStarted = true;
-    this.animationLoop = window.requestAnimationFrame(__WEBPACK_IMPORTED_MODULE_3__src_app_js__["draw"])
+    this.animationLoop = window.requestAnimationFrame(() => {
+      this.draw()
+    })
   }
   drawButton() {
     this.ctx.fillStyle = "green";
@@ -785,7 +775,7 @@ class Game {
     this.ctx.fillText(this.button.text, this.button.x + 20, this.button.y + 50);
   }
   handleClick(evt) {
-    if (evt.clientX > this.button.x && evt.clientX < this.button.x + this.button.width && evt.clientY > this.button.y && evt.clientY < this.button.y + this.button.height) {
+    if (!this.isStarted && evt.clientX > this.button.x && evt.clientX < this.button.x + this.button.width && evt.clientY > this.button.y && evt.clientY < this.button.y + this.button.height) {
       this.init();
     }
   }
@@ -794,6 +784,9 @@ class Game {
     this.ball.dz = 0.2 * this.bat.dz;
     this.hasServed = true;
     this.timer = 0;
+    this.bat.effectAlpha = 1;
+
+    this.hasMissed = false;
   }
   awardPoint() {
     this.playerScore++;
@@ -812,12 +805,13 @@ class Game {
     this.timer = 0;
 
     this.opponentBat.z = this.board.length;
+    this.hasMissed = false;
   }
   drawBackground() {
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = '#000';
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    // this.ctx.fillStyle = '#000';
+    // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.beginPath();
     this.ctx.arc(this.bgCenter.x, this.bgCenter.y, this.bgRadius, -Math.PI, 0);
 
@@ -835,8 +829,10 @@ class Game {
     this.ctx.strokeStyle = "#000";
     this.ctx.font = "30px Arial";
     this.ctx.fillText("Your Score: " + this.playerScore, 30, 30);
+    this.ctx.strokeText("Your Score: " + this.playerScore, 30, 30);
     this.ctx.fillStyle = "#f99";
     this.ctx.fillText("Opponent's Score: " + this.opponentScore, this.canvas.width - 500, 30);
+    this.ctx.strokeText("Opponent's Score: " + this.opponentScore, this.canvas.width - 500, 30);
 
   }
 
@@ -881,10 +877,96 @@ class Game {
     //   this.handleClick(e)
     // }, false);
     this.drawButton();
-    this.hasServed=false;
+    this.hasServed = false;
     this.isStarted = false;
     window.cancelAnimationFrame(this.animationLoop);
   }
+
+  draw() {
+    if (this.hasServed) this.timer++;
+    this.drawBackground();
+    this.drawScore();
+    this.board.drawBoard();
+    if (this.ball.y < this.board.y) this.ball.dy += this.gravity * this.timer;
+    // else this.ball.dy = 0;
+    this.ball.updatePosition();
+
+    if (this.ball.z > -400) {
+      if (!this.board.checkPointBound(this.ball.x,this.ball.y,this.ball.z)) {
+        this.ball.draw();
+      }
+    }else {
+      this.hasServed = false;
+      this.anotherBall();
+    }
+
+    this.bat.drawBat(this.hasServed);
+    if (!this.hasServed && this.bat.dz > 0 && this.bat.z > this.ball.z) this.serve();
+
+
+    if (!this.hasMissed){
+
+    if( this.ball.z > this.board.length / 2) {
+      this.opponentBat.x = this.ball.x;
+      if (this.ball.opponentBounceCount > 0) {
+        let dz = this.opponentBat.dz
+        this.opponentBat.z = this.ball.z;
+        this.ball.reflect(dz);
+        console.log(this.opponentBat.dz);
+
+      }
+    }else {
+      this.opponentBat.z = this.board.length;
+    }
+    // this.opponentBat.y = this.ball.y;
+
+
+    if (!this.hasServed) this.ball.x = this.bat.x
+    if (this.hasServed && this.ball.bounceCount != 0) {
+      if (this.ball.z < this.bat.z && this.ball.x > this.bat.x - this.bat.r && this.ball.x < this.bat.x + this.bat.r && this.ball.y > this.bat.y - this.bat.r) {
+        console.log("reflected");
+        this.ball.bounceCount = 0;
+        this.ball.opponentBounceCount = 0;
+        this.ball.reflect(this.ball.dz * -1);
+        this.bat.effectAlpha = 1;
+
+        // this.ball.z = 10;
+      }
+    }
+    if (this.ball.bounceCount >= 2) {
+      this.removePoint();
+      this.ball.bounceCount = 0;
+      this.ball.opponentBounceCount = 0;
+      this.hasMissed = true;
+    } else if (this.ball.opponentBounceCount > 2) {
+      this.awardPoint();
+      this.ball.bounceCount = 0;
+      this.ball.opponentBounceCount = 0;
+      this.hasMissed = true;
+
+    }
+  }
+
+    this.opponentBat.drawBat(this.hasServed);
+    if (this.bat.effectAlpha > 0) {
+      this.bat.showEffect(this.ball.x, this.ball.y, this.ball.z);
+      this.bat.effectAlpha -= 0.05;
+    }
+
+    if (this.ball.bounceCount > 5 || this.ball.opponentBounceCount > 4) {
+      this.anotherBall();
+    }
+
+    if (this.score == -10) {
+      this.over();
+    } else {
+
+      this.animationLoop = window.requestAnimationFrame(() => {
+        this.draw()
+      });
+    }
+  }
+
 
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Game;

@@ -8,6 +8,9 @@ import {
   Bat
 } from "./Bat.js"
 import {
+  Sound
+} from "./Sound.js"
+import {
   draw
 } from "./src/app.js"
 const utils = require("./utils.js")
@@ -37,8 +40,8 @@ export class Game {
 
     }
     this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius - 100);
-    this.bgGradient.addColorStop(0, '#465069');
-    this.bgGradient.addColorStop(1, '#78909c');
+    this.bgGradient.addColorStop(0, '#904645');
+    this.bgGradient.addColorStop(1, '#ad5452');
 
     this.gravity = 0.006;
     this.isStarted = false;
@@ -61,7 +64,6 @@ export class Game {
 
     this.button = this.startButton;
     this.drawButton();
-    console.log(this.button);
     this.canvas.addEventListener('click', (e) => {
       this.handleClick(e)
     }, false);
@@ -110,8 +112,11 @@ export class Game {
       this.bat.y = this.bat.point3d.y;
       this.bat.z = this.bat.point3d.z;
     }, false)
+    this.hasMissed = false;
     this.isStarted = true;
-    this.animationLoop = window.requestAnimationFrame(draw)
+    this.animationLoop = window.requestAnimationFrame(() => {
+      this.draw()
+    })
   }
   drawButton() {
     this.ctx.fillStyle = "green";
@@ -121,7 +126,7 @@ export class Game {
     this.ctx.fillText(this.button.text, this.button.x + 20, this.button.y + 50);
   }
   handleClick(evt) {
-    if (evt.clientX > this.button.x && evt.clientX < this.button.x + this.button.width && evt.clientY > this.button.y && evt.clientY < this.button.y + this.button.height) {
+    if (!this.isStarted && evt.clientX > this.button.x && evt.clientX < this.button.x + this.button.width && evt.clientY > this.button.y && evt.clientY < this.button.y + this.button.height) {
       this.init();
     }
   }
@@ -130,6 +135,9 @@ export class Game {
     this.ball.dz = 0.2 * this.bat.dz;
     this.hasServed = true;
     this.timer = 0;
+    this.bat.effectAlpha = 1;
+
+    this.hasMissed = false;
   }
   awardPoint() {
     this.playerScore++;
@@ -148,12 +156,13 @@ export class Game {
     this.timer = 0;
 
     this.opponentBat.z = this.board.length;
+    this.hasMissed = false;
   }
   drawBackground() {
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = '#000';
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    // this.ctx.fillStyle = '#000';
+    // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.beginPath();
     this.ctx.arc(this.bgCenter.x, this.bgCenter.y, this.bgRadius, -Math.PI, 0);
 
@@ -171,8 +180,10 @@ export class Game {
     this.ctx.strokeStyle = "#000";
     this.ctx.font = "30px Arial";
     this.ctx.fillText("Your Score: " + this.playerScore, 30, 30);
+    this.ctx.strokeText("Your Score: " + this.playerScore, 30, 30);
     this.ctx.fillStyle = "#f99";
     this.ctx.fillText("Opponent's Score: " + this.opponentScore, this.canvas.width - 500, 30);
+    this.ctx.strokeText("Opponent's Score: " + this.opponentScore, this.canvas.width - 500, 30);
 
   }
 
@@ -217,9 +228,95 @@ export class Game {
     //   this.handleClick(e)
     // }, false);
     this.drawButton();
-    this.hasServed=false;
+    this.hasServed = false;
     this.isStarted = false;
     window.cancelAnimationFrame(this.animationLoop);
   }
+
+  draw() {
+    if (this.hasServed) this.timer++;
+    this.drawBackground();
+    this.drawScore();
+    this.board.drawBoard();
+    if (this.ball.y < this.board.y) this.ball.dy += this.gravity * this.timer;
+    // else this.ball.dy = 0;
+    this.ball.updatePosition();
+
+    if (this.ball.z > -400) {
+      if (!this.board.checkPointBound(this.ball.x,this.ball.y,this.ball.z)) {
+        this.ball.draw();
+      }
+    }else {
+      this.hasServed = false;
+      this.anotherBall();
+    }
+
+    this.bat.drawBat(this.hasServed);
+    if (!this.hasServed && this.bat.dz > 0 && this.bat.z > this.ball.z) this.serve();
+
+
+    if (!this.hasMissed){
+
+    if( this.ball.z > this.board.length / 2) {
+      this.opponentBat.x = this.ball.x;
+      if (this.ball.opponentBounceCount > 0) {
+        let dz = this.opponentBat.dz
+        this.opponentBat.z = this.ball.z;
+        this.ball.reflect(dz);
+        console.log(this.opponentBat.dz);
+
+      }
+    }else {
+      this.opponentBat.z = this.board.length;
+    }
+    // this.opponentBat.y = this.ball.y;
+
+
+    if (!this.hasServed) this.ball.x = this.bat.x
+    if (this.hasServed && this.ball.bounceCount != 0) {
+      if (this.ball.z < this.bat.z && this.ball.x > this.bat.x - this.bat.r && this.ball.x < this.bat.x + this.bat.r && this.ball.y > this.bat.y - this.bat.r) {
+        console.log("reflected");
+        this.ball.bounceCount = 0;
+        this.ball.opponentBounceCount = 0;
+        this.ball.reflect(this.ball.dz * -1);
+        this.bat.effectAlpha = 1;
+
+        // this.ball.z = 10;
+      }
+    }
+    if (this.ball.bounceCount >= 2) {
+      this.removePoint();
+      this.ball.bounceCount = 0;
+      this.ball.opponentBounceCount = 0;
+      this.hasMissed = true;
+    } else if (this.ball.opponentBounceCount > 2) {
+      this.awardPoint();
+      this.ball.bounceCount = 0;
+      this.ball.opponentBounceCount = 0;
+      this.hasMissed = true;
+
+    }
+  }
+
+    this.opponentBat.drawBat(this.hasServed);
+    if (this.bat.effectAlpha > 0) {
+      this.bat.showEffect(this.ball.x, this.ball.y, this.ball.z);
+      this.bat.effectAlpha -= 0.05;
+    }
+
+    if (this.ball.bounceCount > 5 || this.ball.opponentBounceCount > 4) {
+      this.anotherBall();
+    }
+
+    if (this.score == -10) {
+      this.over();
+    } else {
+
+      this.animationLoop = window.requestAnimationFrame(() => {
+        this.draw()
+      });
+    }
+  }
+
 
 }

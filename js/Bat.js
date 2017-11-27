@@ -16,6 +16,7 @@ export class Bat {
     this.mouseX = 0;
     this.mouseY = 0;
 
+    this.effectAlpha = 0;
     this.isOpponent= false;
 
   }
@@ -43,7 +44,7 @@ export class Bat {
     // console.log(this.dz);
     // this.ctx.rotate(-Math.PI/2);
     // this.ctx.translate(-this.point2d.x2d,-this.point2d.y2d)
-    this.ctx.restore();
+    // this.ctx.restore();
   }
   makeBatShadow(){
 
@@ -68,6 +69,13 @@ export class Bat {
     this.ctx.lineTo(this.point2d.x2d, this.point2d.y2d + utils.PROJECTOR.get2dLength( this.r,this.z))
     // this.ctx.fillStyle = "#aa9f7f";
     this.ctx.fillStyle = "rgba(170,159,127,1)";
+    this.ctx.fill();
+
+  }
+  showEffect(x,y,z){
+    let point2d = utils.PROJECTOR.get3d(this.x,this.y,this.z);
+    this.ctx.arc(point2d.x2d,point2d.y2d,20,20,0,Math.PI*2);
+    this.ctx.fillStyle = "rgba(236,0,0,"+this.effectAlpha+")";
     this.ctx.fill();
 
   }

@@ -28,16 +28,18 @@ export class Ball {
 
   draw() {
 
-    if (this.z < 0) this.shadowY = 600;
-    else this.shadowY = this.board.y;
-
     this.center2d = utils.PROJECTOR.get2d(this.x, this.y, this.z);
     this.shadow = utils.PROJECTOR.get2d(this.x, this.maxY, this.z);
     let radius2d = utils.PROJECTOR.get2dLength(this.r, this.z);
+
+    if (this.board.checkPointBound(this.center2d.x2d,this.center2d.y2d,this.y)) {
+      return 0;
+    }
+
     //shadow
     this.ctx.beginPath();
     this.ctx.arc(this.shadow.x2d, this.shadow.y2d, radius2d, 0, Math.PI * 2);
-    this.ctx.fillStyle = "rgba(68,68,68,0.5)";
+    this.ctx.fillStyle = "rgba(68,68,68,0.8)";
     this.ctx.fill();
     this.ctx.closePath();
 
@@ -52,7 +54,13 @@ export class Ball {
   }
 
   reflect(dzOther) {
-    this.dz = dzOther;
+    if(Math.abs(dzOther) > 30){
+      this.dz = (dzOther/Math.abs(dzOther)) * 30;
+    }
+    else {
+
+      this.dz = dzOther;
+    }
     this.maxY = this.board.y;
   }
   bounce() {
