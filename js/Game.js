@@ -20,7 +20,8 @@ export class Game {
     this.canvas = document.getElementById('gameCanvas');
     // this.canvas.style.border = "#000 1px solid"
     this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight - 4;
+    this.canvas.style.float = "left";
+    this.canvas.height = window.innerHeight;
     utils.PROJECTOR.setCanvas(this.canvas);
     this.ctx = this.canvas.getContext('2d');
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -40,10 +41,10 @@ export class Game {
 
     }
     this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius - 100);
-    this.bgGradient.addColorStop(0, '#904645');
-    this.bgGradient.addColorStop(1, '#ad5452');
+    this.bgGradient.addColorStop(0, '#66ffa6');
+    this.bgGradient.addColorStop(1, '#00b248');
 
-    this.gravity = 0.006;
+    this.gravity = 0.005;
     this.isStarted = false;
     this.hasServed = false;
 
@@ -119,7 +120,7 @@ export class Game {
     })
   }
   drawButton() {
-    this.ctx.fillStyle = "green";
+    this.ctx.fillStyle = "#00b248";
     this.ctx.fillRect(this.button.x, this.button.y, this.button.width, this.button.height);
     this.ctx.fillStyle = "white";
     this.ctx.font = "30px Arial";
@@ -161,8 +162,8 @@ export class Game {
   drawBackground() {
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    // this.ctx.fillStyle = '#000';
-    // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = '#9fffe0';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.beginPath();
     this.ctx.arc(this.bgCenter.x, this.bgCenter.y, this.bgRadius, -Math.PI, 0);
 
