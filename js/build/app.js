@@ -294,7 +294,7 @@ class Board {
 
     this.netHeight = this.y - 55 / 400 * this.width;
     this.netPosition = this.length / 2;
-    this.netHeight = his.y - this.length / 4
+    this.netHeight = this.y - this.length / 4
     this.borderWidth = 10 / 400 * this.width;
 
     this.frontLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z);
