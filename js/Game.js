@@ -279,10 +279,9 @@ export class Game {
             console.log("reflected");
             this.ball.bounceCount = 0;
             this.ball.opponentBounceCount = 0;
-            this.ball.Dy = 50;
+            this.ball.dy = 50;
             this.ball.reflect(this.bat.dx, this.bat.dz * 1);
             this.bat.effectAlpha = 1;
-
             // this.ball.z = 10;
           }
         }
@@ -326,7 +325,7 @@ export class Game {
       this.bat.effectAlpha -= 0.05;
     }
 
-    if (this.ball.bounceCount > 20 || this.ball.opponentBounceCount > 20) {
+    if (this.ball.bounceCount > 2 || this.ball.opponentBounceCount > 2) {
       this.anotherBall();
     }
 
