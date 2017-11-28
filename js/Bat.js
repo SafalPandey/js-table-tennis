@@ -75,7 +75,7 @@ export class Bat {
   showEffect(x,y,z){
     let point2d = utils.PROJECTOR.get3d(this.x,this.y,this.z);
     this.ctx.arc(point2d.x2d,point2d.y2d,20,20,0,Math.PI*2);
-    this.ctx.fillStyle = "rgba(236,0,0,"+this.effectAlpha+")";
+    this.ctx.fillStyle = "rgba(0,0,0,"+this.effectAlpha+")";
     this.ctx.fill();
 
   }
