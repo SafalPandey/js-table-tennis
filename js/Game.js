@@ -10,9 +10,7 @@ import {
 import {
   Sound
 } from "./Sound.js"
-import {
-  draw
-} from "./src/app.js"
+
 const utils = require("./utils.js")
 
 export class Game {
@@ -41,10 +39,10 @@ export class Game {
 
     }
     this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius - 100);
-    this.bgGradient.addColorStop(0, '#66ffa6');
-    this.bgGradient.addColorStop(1, '#00b248');
+    this.bgGradient.addColorStop(0, '#757575');
+    this.bgGradient.addColorStop(1, '#a4a4a4');
 
-    this.gravity = 0.005;
+    this.gravity = 0.006;
     this.isStarted = false;
     this.hasServed = false;
 
@@ -68,6 +66,8 @@ export class Game {
     this.canvas.addEventListener('click', (e) => {
       this.handleClick(e)
     }, false);
+    this.soundsDiv = document.createElement('div');
+
   }
 
   init() {
@@ -77,7 +77,7 @@ export class Game {
     this.opponentBat = new Bat(this.canvas, this.ctx, this.board);
     this.opponentBat.z = this.board.length;
     this.opponentBat.isOpponent = true;
-    this.ball = new Ball(this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 10);
+    this.ball = new Ball(this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 10, this.soundsDiv);
     this.timer = 0;
     this.playerScore = 0;
     this.opponentScore = 0;
@@ -132,13 +132,17 @@ export class Game {
     }
   }
   serve() {
-    this.ball.dx = 0.2 * this.bat.dx
-    this.ball.dz = 0.2 * this.bat.dz;
+
+    this.ball.dx = 0.1 * this.bat.dx
+    this.ball.dz = 0.1 * this.bat.dz;
+    this.ball.dy = 3;
     this.hasServed = true;
     this.timer = 0;
     this.bat.effectAlpha = 1;
 
     this.hasMissed = false;
+    this.bounceSound = new Sound("sounds/bounce.mp3", this.soundsDiv);
+    this.bounceSound.play();
   }
   awardPoint() {
     this.playerScore++;
@@ -153,7 +157,7 @@ export class Game {
   anotherBall() {
     this.ball = null;
 
-    this.ball = new Ball(this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 5);
+    this.ball = new Ball(this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 10, this.soundsDiv);
     this.timer = 0;
 
     this.opponentBat.z = this.board.length;
@@ -244,10 +248,10 @@ export class Game {
     this.ball.updatePosition();
 
     if (this.ball.z > -400) {
-      if (!this.board.checkPointBound(this.ball.x,this.ball.y,this.ball.z)) {
+      if (!this.board.checkPointBound(this.ball.x, this.ball.y, this.ball.z)) {
         this.ball.draw();
       }
-    }else {
+    } else {
       this.hasServed = false;
       this.anotherBall();
     }
@@ -256,48 +260,58 @@ export class Game {
     if (!this.hasServed && this.bat.dz > 0 && this.bat.z > this.ball.z) this.serve();
 
 
-    if (!this.hasMissed){
+    if (!this.hasMissed) {
 
-    if( this.ball.z > this.board.length / 2) {
-      this.opponentBat.x = this.ball.x;
-      if (this.ball.opponentBounceCount > 0) {
-        let dz = this.opponentBat.dz
-        this.opponentBat.z = this.ball.z;
-        this.ball.reflect(dz);
-        console.log(this.opponentBat.dz);
-
+      if (this.ball.z > this.board.length / 2) {
+        this.opponentBat.x = this.ball.x;
+        if (this.ball.opponentBounceCount > 0) {
+          this.opponentBat.z = this.ball.z;
+          let dz = this.opponentBat.dz
+          this.ball.reflect(dz);
+        }
+      } else {
+        this.opponentBat.z = this.board.length;
       }
-    }else {
-      this.opponentBat.z = this.board.length;
-    }
-    // this.opponentBat.y = this.ball.y;
+      // this.opponentBat.y = this.ball.y;
 
 
-    if (!this.hasServed) this.ball.x = this.bat.x
-    if (this.hasServed && this.ball.bounceCount != 0) {
-      if (this.ball.z < this.bat.z && this.ball.x > this.bat.x - this.bat.r && this.ball.x < this.bat.x + this.bat.r && this.ball.y > this.bat.y - this.bat.r) {
-        console.log("reflected");
+      if (!this.hasServed) this.ball.x = this.bat.x
+      if (this.hasServed){
+
+      if(this.ball.opponentBounceCount != 0) {
+        if (this.ball.z < this.bat.z && this.ball.x > this.bat.x - this.bat.r && this.ball.x < this.bat.x + this.bat.r && this.ball.y > this.bat.y - this.bat.r) {
+          console.log("reflected");
+          this.ball.bounceCount = 0;
+          this.ball.opponentBounceCount = 0;
+          this.ball.reflect(this.bat.dz * 1);
+          this.bat.effectAlpha = 1;
+
+          // this.ball.z = 10;
+        }
+      }
+
+      if (this.ball.bounceCount == 0 && this.ball.opponentBounceCount > 0) {
+        this.removePoint();
         this.ball.bounceCount = 0;
         this.ball.opponentBounceCount = 0;
-        this.ball.reflect(this.ball.dz * -1);
-        this.bat.effectAlpha = 1;
+        this.hasMissed = true;
 
-        // this.ball.z = 10;
       }
     }
-    if (this.ball.bounceCount >= 2) {
-      this.removePoint();
-      this.ball.bounceCount = 0;
-      this.ball.opponentBounceCount = 0;
-      this.hasMissed = true;
-    } else if (this.ball.opponentBounceCount > 2) {
-      this.awardPoint();
-      this.ball.bounceCount = 0;
-      this.ball.opponentBounceCount = 0;
-      this.hasMissed = true;
+      if (this.ball.bounceCount >= 2 ) {
+        this.removePoint();
+        this.ball.bounceCount = 0;
+        this.ball.opponentBounceCount = 0;
+        this.hasMissed = true;
+      } else if (this.ball.opponentBounceCount > 2) {
+        this.awardPoint();
+        this.ball.bounceCount = 0;
+        this.ball.opponentBounceCount = 0;
+        this.hasMissed = true;
+
+      }
 
     }
-  }
 
     this.opponentBat.drawBat(this.hasServed);
     if (this.bat.effectAlpha > 0) {
@@ -305,7 +319,7 @@ export class Game {
       this.bat.effectAlpha -= 0.05;
     }
 
-    if (this.ball.bounceCount > 5 || this.ball.opponentBounceCount > 4) {
+    if (this.ball.bounceCount > 3 || this.ball.opponentBounceCount > 2) {
       this.anotherBall();
     }
 

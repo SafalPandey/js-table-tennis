@@ -5,7 +5,7 @@ export class Bat {
     this.ctx = ctx;
     this.board = board;
     this.x = 0;
-    this.y = this.board.y - 150;
+    this.y = this.board.y - 100;
     this.z = -10;
     this.r = 5 * 10 / 400 * this.board.width;
 

@@ -103,7 +103,7 @@ let utils = {
 
   },
 
-  BAT_Y_POSITION: 150,
+  BAT_Y_POSITION: 200,
 
 }
 

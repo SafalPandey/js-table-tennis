@@ -1,7 +1,9 @@
+import {
+  Sound
+} from "./Sound.js"
 const utils = require("./utils.js")
-
 export class Ball {
-  constructor(ctx, board, x, y, z) {
+  constructor(ctx, board, x, y, z,soundsDiv) {
 
     this.ctx = ctx;
     this.board = board;
@@ -23,7 +25,9 @@ export class Ball {
     this.shadowY = this.board.y;
     this.bounceCount = 0;
     this.opponentBounceCount = 0;
-
+    this.soundsDiv = soundsDiv;
+    this.bounceSound = new Sound("sounds/bounce.mp3",this.soundsDiv);
+    document.body.appendChild(this.soundsDiv)
   }
 
   draw() {
@@ -54,8 +58,8 @@ export class Ball {
   }
 
   reflect(dzOther) {
-    if(Math.abs(dzOther) > 30){
-      this.dz = (dzOther/Math.abs(dzOther)) * 30;
+    if(Math.abs(dzOther) > 35){
+      this.dz = (dzOther/Math.abs(dzOther)) * 35;
     }
     else {
 
@@ -64,8 +68,13 @@ export class Ball {
     this.maxY = this.board.y;
   }
   bounce() {
+    while(this.soundsDiv.children.length != 0)
+    {
+      this.soundsDiv.children[0].pause();
+      this.soundsDiv.removeChild(this.soundsDiv.children[0]);
+    }
     this.dy = -this.dy;
-
+    this.bounceSound.play();
     console.log(this.bounceCount,this.opponentBounceCount);
   }
   sideCheck() {

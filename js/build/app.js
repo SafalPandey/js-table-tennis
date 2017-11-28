@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -172,7 +172,7 @@ let utils = {
 
   },
 
-  BAT_Y_POSITION: 150,
+  BAT_Y_POSITION: 200,
 
 }
 
@@ -184,22 +184,30 @@ module.exports = utils;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Board_js__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Ball_js__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Bat_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Game_js__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Sound_js__ = __webpack_require__(5);
+class Sound {
+
+  constructor(src,soundsDiv) {
+    this.sound = document.createElement('audio');
+    this.sound.src = src;
+    this.sound.setAttribute('preload', 'auto');
+    this.sound.setAttribute('controls', 'none');
+    this.sound.style.display = 'none';
+
+    soundsDiv.appendChild(this.sound);
+
+    this.play = function() {
+      this.sound.play();
+    }
+
+    this.stop = function() {
+      this.sound.pause();
+    }
+  }
 
 
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Sound;
 
-
-
-const utils = __webpack_require__(0)
-
-
-let game = new __WEBPACK_IMPORTED_MODULE_3__Game_js__["a" /* Game */]();
-// game.init();
 
 
 /***/ }),
@@ -396,10 +404,11 @@ class Board {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const utils = __webpack_require__(0)
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Sound_js__ = __webpack_require__(1);
 
+const utils = __webpack_require__(0)
 class Ball {
-  constructor(ctx, board, x, y, z) {
+  constructor(ctx, board, x, y, z,soundsDiv) {
 
     this.ctx = ctx;
     this.board = board;
@@ -421,7 +430,9 @@ class Ball {
     this.shadowY = this.board.y;
     this.bounceCount = 0;
     this.opponentBounceCount = 0;
-
+    this.soundsDiv = soundsDiv;
+    this.bounceSound = new __WEBPACK_IMPORTED_MODULE_0__Sound_js__["a" /* Sound */]("sounds/bounce.mp3",this.soundsDiv);
+    document.body.appendChild(this.soundsDiv)
   }
 
   draw() {
@@ -452,8 +463,8 @@ class Ball {
   }
 
   reflect(dzOther) {
-    if(Math.abs(dzOther) > 30){
-      this.dz = (dzOther/Math.abs(dzOther)) * 30;
+    if(Math.abs(dzOther) > 35){
+      this.dz = (dzOther/Math.abs(dzOther)) * 35;
     }
     else {
 
@@ -462,8 +473,13 @@ class Ball {
     this.maxY = this.board.y;
   }
   bounce() {
+    while(this.soundsDiv.children.length != 0)
+    {
+      this.soundsDiv.children[0].pause();
+      this.soundsDiv.removeChild(this.soundsDiv.children[0]);
+    }
     this.dy = -this.dy;
-
+    this.bounceSound.play();
     console.log(this.bounceCount,this.opponentBounceCount);
   }
   sideCheck() {
@@ -537,7 +553,7 @@ class Bat {
     this.ctx = ctx;
     this.board = board;
     this.x = 0;
-    this.y = this.board.y - 150;
+    this.y = this.board.y - 100;
     this.z = -10;
     this.r = 5 * 10 / 400 * this.board.width;
 
@@ -621,30 +637,22 @@ class Bat {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-class Sound {
-
-  constructor(src) {
-    this.sound = document.createElement('audio');
-    this.sound.src = src;
-    this.sound.setAttribute('preload', 'auto');
-    this.sound.setAttribute('controls', 'none');
-    this.sound.style.display = 'none';
-
-    document.body.appendChild(this.sound);
-
-    this.play = function() {
-      this.sound.play();
-    }
-
-    this.stop = function() {
-      this.sound.pause();
-    }
-  }
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Board_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Ball_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Bat_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Game_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Sound_js__ = __webpack_require__(1);
 
 
-}
-/* unused harmony export Sound */
 
+
+
+const utils = __webpack_require__(0)
+
+
+let game = new __WEBPACK_IMPORTED_MODULE_3__Game_js__["a" /* Game */]();
+// game.init();
 
 
 /***/ }),
@@ -655,8 +663,7 @@ class Sound {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Board_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Ball_js__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Bat_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Sound_js__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__src_app_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Sound_js__ = __webpack_require__(1);
 
 
 
@@ -690,10 +697,10 @@ class Game {
 
     }
     this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius - 100);
-    this.bgGradient.addColorStop(0, '#66ffa6');
-    this.bgGradient.addColorStop(1, '#00b248');
+    this.bgGradient.addColorStop(0, '#757575');
+    this.bgGradient.addColorStop(1, '#a4a4a4');
 
-    this.gravity = 0.005;
+    this.gravity = 0.006;
     this.isStarted = false;
     this.hasServed = false;
 
@@ -717,6 +724,8 @@ class Game {
     this.canvas.addEventListener('click', (e) => {
       this.handleClick(e)
     }, false);
+    this.soundsDiv = document.createElement('div');
+
   }
 
   init() {
@@ -726,7 +735,7 @@ class Game {
     this.opponentBat = new __WEBPACK_IMPORTED_MODULE_2__Bat_js__["a" /* Bat */](this.canvas, this.ctx, this.board);
     this.opponentBat.z = this.board.length;
     this.opponentBat.isOpponent = true;
-    this.ball = new __WEBPACK_IMPORTED_MODULE_1__Ball_js__["a" /* Ball */](this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 10);
+    this.ball = new __WEBPACK_IMPORTED_MODULE_1__Ball_js__["a" /* Ball */](this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 10, this.soundsDiv);
     this.timer = 0;
     this.playerScore = 0;
     this.opponentScore = 0;
@@ -781,13 +790,17 @@ class Game {
     }
   }
   serve() {
-    this.ball.dx = 0.2 * this.bat.dx
-    this.ball.dz = 0.2 * this.bat.dz;
+
+    this.ball.dx = 0.1 * this.bat.dx
+    this.ball.dz = 0.1 * this.bat.dz;
+    this.ball.dy = 3;
     this.hasServed = true;
     this.timer = 0;
     this.bat.effectAlpha = 1;
 
     this.hasMissed = false;
+    this.bounceSound = new __WEBPACK_IMPORTED_MODULE_3__Sound_js__["a" /* Sound */]("sounds/bounce.mp3", this.soundsDiv);
+    this.bounceSound.play();
   }
   awardPoint() {
     this.playerScore++;
@@ -802,7 +815,7 @@ class Game {
   anotherBall() {
     this.ball = null;
 
-    this.ball = new __WEBPACK_IMPORTED_MODULE_1__Ball_js__["a" /* Ball */](this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 5);
+    this.ball = new __WEBPACK_IMPORTED_MODULE_1__Ball_js__["a" /* Ball */](this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 10, this.soundsDiv);
     this.timer = 0;
 
     this.opponentBat.z = this.board.length;
@@ -893,10 +906,10 @@ class Game {
     this.ball.updatePosition();
 
     if (this.ball.z > -400) {
-      if (!this.board.checkPointBound(this.ball.x,this.ball.y,this.ball.z)) {
+      if (!this.board.checkPointBound(this.ball.x, this.ball.y, this.ball.z)) {
         this.ball.draw();
       }
-    }else {
+    } else {
       this.hasServed = false;
       this.anotherBall();
     }
@@ -905,48 +918,58 @@ class Game {
     if (!this.hasServed && this.bat.dz > 0 && this.bat.z > this.ball.z) this.serve();
 
 
-    if (!this.hasMissed){
+    if (!this.hasMissed) {
 
-    if( this.ball.z > this.board.length / 2) {
-      this.opponentBat.x = this.ball.x;
-      if (this.ball.opponentBounceCount > 0) {
-        let dz = this.opponentBat.dz
-        this.opponentBat.z = this.ball.z;
-        this.ball.reflect(dz);
-        console.log(this.opponentBat.dz);
-
+      if (this.ball.z > this.board.length / 2) {
+        this.opponentBat.x = this.ball.x;
+        if (this.ball.opponentBounceCount > 0) {
+          this.opponentBat.z = this.ball.z;
+          let dz = this.opponentBat.dz
+          this.ball.reflect(dz);
+        }
+      } else {
+        this.opponentBat.z = this.board.length;
       }
-    }else {
-      this.opponentBat.z = this.board.length;
-    }
-    // this.opponentBat.y = this.ball.y;
+      // this.opponentBat.y = this.ball.y;
 
 
-    if (!this.hasServed) this.ball.x = this.bat.x
-    if (this.hasServed && this.ball.bounceCount != 0) {
-      if (this.ball.z < this.bat.z && this.ball.x > this.bat.x - this.bat.r && this.ball.x < this.bat.x + this.bat.r && this.ball.y > this.bat.y - this.bat.r) {
-        console.log("reflected");
+      if (!this.hasServed) this.ball.x = this.bat.x
+      if (this.hasServed){
+
+      if(this.ball.opponentBounceCount != 0) {
+        if (this.ball.z < this.bat.z && this.ball.x > this.bat.x - this.bat.r && this.ball.x < this.bat.x + this.bat.r && this.ball.y > this.bat.y - this.bat.r) {
+          console.log("reflected");
+          this.ball.bounceCount = 0;
+          this.ball.opponentBounceCount = 0;
+          this.ball.reflect(this.bat.dz * 1);
+          this.bat.effectAlpha = 1;
+
+          // this.ball.z = 10;
+        }
+      }
+
+      if (this.ball.bounceCount == 0 && this.ball.opponentBounceCount > 0) {
+        this.removePoint();
         this.ball.bounceCount = 0;
         this.ball.opponentBounceCount = 0;
-        this.ball.reflect(this.ball.dz * -1);
-        this.bat.effectAlpha = 1;
+        this.hasMissed = true;
 
-        // this.ball.z = 10;
       }
     }
-    if (this.ball.bounceCount >= 2) {
-      this.removePoint();
-      this.ball.bounceCount = 0;
-      this.ball.opponentBounceCount = 0;
-      this.hasMissed = true;
-    } else if (this.ball.opponentBounceCount > 2) {
-      this.awardPoint();
-      this.ball.bounceCount = 0;
-      this.ball.opponentBounceCount = 0;
-      this.hasMissed = true;
+      if (this.ball.bounceCount >= 2 ) {
+        this.removePoint();
+        this.ball.bounceCount = 0;
+        this.ball.opponentBounceCount = 0;
+        this.hasMissed = true;
+      } else if (this.ball.opponentBounceCount > 2) {
+        this.awardPoint();
+        this.ball.bounceCount = 0;
+        this.ball.opponentBounceCount = 0;
+        this.hasMissed = true;
+
+      }
 
     }
-  }
 
     this.opponentBat.drawBat(this.hasServed);
     if (this.bat.effectAlpha > 0) {
@@ -954,7 +977,7 @@ class Game {
       this.bat.effectAlpha -= 0.05;
     }
 
-    if (this.ball.bounceCount > 5 || this.ball.opponentBounceCount > 4) {
+    if (this.ball.bounceCount > 3 || this.ball.opponentBounceCount > 2) {
       this.anotherBall();
     }
 
