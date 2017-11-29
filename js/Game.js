@@ -204,7 +204,6 @@ export class Game {
     this.justServed = true;
     this.timer = 0;
     this.ball.effectAlpha = 1;
-    console.log('served');
     this.hasMissed = false;
     this.opponentHasTouched = false;
     this.bat.y = this.board.y - 50
@@ -272,10 +271,8 @@ export class Game {
 
   over() {
 
-    this.board = null;
-    this.bat = null;
-    this.ball = null;
-    this.point = 0;
+    this.playerScore = 0;
+    this.opponentScore = 0;
     this.canvas.style.cursor = "auto";
     this.canvas.removeEventListener("mouseover", (evt) => {
       if (this.isStarted) {
