@@ -348,7 +348,7 @@ export class Game {
       this.ball.effectAlpha -= 0.05;
     }
 
-    if (this.ball.bounceCount > 2 || this.ball.opponentBounceCount > 2) {
+    if (this.ball.bounceCount > 5 || this.ball.opponentBounceCount > 5) {
       this.getAnotherBall();
     }
 

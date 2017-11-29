@@ -172,7 +172,9 @@ export class Board {
   }
 
   checkPointBound(x2d,y2d,y3d){
-    if(x2d > this.frontLeftPoint2d.x2d && y2d < this.frontLeftPoint2d.y2d && x2d < this.frontRightPoint2d.x2d && y2d > this.backRightPoint2d.y2d && y3d > this.y){
+    let determinantLeftSide = (x2d-this.frontLeftoint2d.x2d)*(this.backLeftPoint2d.y2d - this.frontLeftoint2d.y2d) - (y2d - this.frontLeftoint2d.y2d)*(this.backLeftPoint2d.x2d - this.frontLeftoint2d.x2d)
+    let determinantRightSide = (x2d-this.frontRightPoint2d.x2d)*(this.backRightPoint2d.y2d - this.frontRightPoint2d.y2d) - (y2d - this.frontRightPoint2d.y2d)*(this.backRightPoint2d.x2d - this.frontRightPoint2d.x2d)
+    if(y2d > this.backLeftPoint2d.y2d && y2d < this.frontLeftoint2d.y2d && determinantLeftSide < 0 && determinantRightSide > 0 && y3d > this.y){
       return true;
     }
   }
