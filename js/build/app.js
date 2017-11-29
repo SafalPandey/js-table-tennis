@@ -427,8 +427,6 @@ class Ball {
     this.maxY = this.board.y;
     this.effectAlpha = 0;
 
-    this.justServed = false;
-
     this.shadowY = this.board.y;
     this.bounceCount = 0;
     this.opponentBounceCount = 0;
@@ -467,19 +465,20 @@ class Ball {
   reflect(dxOther, dzOther) {
     if (Math.abs(dzOther) > 15) {
       this.dz = (dzOther / Math.abs(dzOther)) * 15;
-    }else if (dzOther == 0 && this.z < this.board.length) {
+    }else if (dzOther == 0 && this.z < this.board.length && this.x < this.board.width && this.x > -this.board.width) {
       this.dz = -15;
     } else {
 
       this.dz = dzOther;
     }
+
+    this.dx = 0.13 * dxOther
     // this.dx = dxOther * 0.1;
     this.maxY = this.board.y;
   }
   bounce() {
     while (this.soundsDiv.children.length != 0) {
       // if(this.soundPromise != undefined){
-
         this.soundsDiv.removeChild(this.soundsDiv.children[0]);
       // }
     }
@@ -524,7 +523,6 @@ class Ball {
       }
       if (this.z > this.board.netPosition) {
         this.opponentBounceCount++;
-        this.justServed = false;
       }
       this.bounce();
     }
@@ -803,10 +801,10 @@ class Game {
     this.ball.dz = 0.13 * this.bat.dz;
     this.ball.dy = 4;
     this.hasServed = true;
+    this.justServed = true;
     this.timer = 0;
     this.ball.effectAlpha = 1;
     console.log('served');
-    this.ball.justServed = true;
     this.hasMissed = false;
     this.opponentHasTouched = false;
     this.bat.y = this.board.y - 50
@@ -816,14 +814,20 @@ class Game {
   awardPoint() {
     this.playerScore++;
     this.hasMissed = true;
+    this.ball.bounceCount = 0;
+    this.ball.opponentBounceCount = 0;
+
 
   }
   removePoint() {
     this.opponentScore++;
     this.hasMissed = true;
+    this.ball.bounceCount = 0;
+    this.ball.opponentBounceCount = 0;
+
   }
 
-  anotherBall() {
+  getAnotherBall() {
     this.ball = null;
 
     this.ball = new __WEBPACK_IMPORTED_MODULE_1__Ball_js__["a" /* Ball */](this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 10, this.soundsDiv);
@@ -916,13 +920,10 @@ class Game {
     // else this.ball.dy = 0;
     this.ball.updatePosition();
 
-
-
-
-
     if (!this.hasMissed) {
 
       if (!this.hasServed) this.ball.x = this.bat.x
+
       if (this.hasServed) {
         if (this.opponentHasTouched) {
           if (this.ball.z < this.bat.z && this.ball.x > this.bat.x - this.bat.r && this.ball.x < this.bat.x + this.bat.r && this.ball.y > this.bat.y - this.bat.r) {
@@ -934,93 +935,74 @@ class Game {
             this.timer = 0;
             this.ball.effectAlpha = 1;
             this.opponentHasTouched = false;
-            // this.ball.z = 10;
           }
         }
 
-        if (!this.opponentHasTouched && this.ball.bounceCount == 0 && this.ball.opponentBounceCount > 0) {
+        if (this.justServed && !this.opponentHasTouched){
+        if ((this.ball.bounceCount == 0 && this.ball.opponentBounceCount > 0)) {
           this.removePoint();
-          this.ball.bounceCount = 0;
-          this.ball.opponentBounceCount = 0;
-          this.hasMissed = true;
         }
       }
+      }
 
+      //move Opponent Bat
       if (this.ball.z > this.board.length / 2) {
         this.opponentBat.x = this.ball.x;
         if (this.ball.opponentBounceCount > 0) {
           this.opponentBat.z = this.ball.z;
-          // let dz = this.opponentBat.dz
           this.ball.reflect(this.opponentBat.dx, this.opponentBat.dz);
           if (!this.opponentHasTouched) {
             this.ball.dy = -0.013 * this.opponentBat.z;
             this.opponentHasTouched = true;
             this.ball.bounceCount = 0;
-            console.log('changed',this.ball.bounceCount,this.ball.opponentBounceCount);
+
+            if (this.justServed) {
+              this.justServed = false;
+            }
           }
         }
       } else {
         this.opponentBat.z = this.board.length;
       }
-      // this.opponentBat.y = this.ball.y;
 
-
-
-
-      // console.log(this.bat.z);
-
-      if (this.ball.bounceCount >= 2) {
-        console.log('removed',);
+      //game logic
+      if (this.ball.bounceCount === 2) {
         this.removePoint();
-        this.ball.bounceCount = 0;
-        this.ball.opponentBounceCount = 0;
-        this.hasMissed = true;
-      } else if (this.ball.opponentBounceCount >= 2) {
+      } else if (this.ball.opponentBounceCount === 2) {
         this.awardPoint();
-        this.ball.bounceCount = 0;
-        this.ball.opponentBounceCount = 0;
-        this.hasMissed = true;
-
       }
-
     }
 
     this.opponentBat.drawBat(this.hasServed);
 
+    //draw ball only if it is infront of the player
     if (this.ball.z > -400) {
       if (!this.board.checkPointBound(this.ball.x, this.ball.y, this.ball.z)) {
         this.ball.draw();
       }
     } else {
       this.hasServed = false;
+
+      //award or remove point before making new ball
       if (this.ball.opponentBounceCount == 1 && this.ball.bounceCount == 0) {
         this.awardPoint();
-        this.ball.bounceCount = 0;
-        this.ball.opponentBounceCount = 0;
-        this.hasMissed = true;
-      } else if (this.ball.opponentBounceCount == 1 && this.ball.bounceCount == 1) {
+      } else if (this.ball.opponentBounceCount == 1 && this.ball.bounceCount == 1 || this.ball.opponentBounceCount == 0 && this.ball.bounceCount == 1) {
         this.removePoint();
-        this.ball.bounceCount = 0;
-        this.ball.opponentBounceCount = 0;
-        this.hasMissed = true;
-      } else if (this.ball.opponentBounceCount == 0 && this.ball.bounceCount == 1) {
-        this.removePoint();
-        this.ball.bounceCount = 0;
-        this.ball.opponentBounceCount = 0;
-        this.hasMissed = true;
       }
-      this.anotherBall();
+
+      this.getAnotherBall();
     }
+
     this.bat.drawBat(this.hasServed);
 
+    //hit effect on ball
     if (this.ball.effectAlpha > 0) {
       this.ball.showEffect(this.ball.x, this.ball.y, this.ball.z);
       this.ball.effectAlpha -= 0.05;
     }
 
-
     if (this.ball.bounceCount > 2 || this.ball.opponentBounceCount > 2) {
-      this.anotherBall();
+      this.getAnotherBall();
     }
 
     if (!this.hasServed && this.bat.dz > 0 && this.bat.z > this.ball.z) {
@@ -1028,16 +1010,16 @@ class Game {
     }
 
     if (this.playerScore > 10 || this.opponentScore > 10) {
+      //game over
       this.over();
     } else {
 
+      //next animation frame
       this.animationLoop = window.requestAnimationFrame(() => {
         this.draw()
       });
     }
   }
-
-
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Game;
 

@@ -23,8 +23,6 @@ export class Ball {
     this.maxY = this.board.y;
     this.effectAlpha = 0;
 
-    this.justServed = false;
-
     this.shadowY = this.board.y;
     this.bounceCount = 0;
     this.opponentBounceCount = 0;
@@ -63,19 +61,20 @@ export class Ball {
   reflect(dxOther, dzOther) {
     if (Math.abs(dzOther) > 15) {
       this.dz = (dzOther / Math.abs(dzOther)) * 15;
-    }else if (dzOther == 0 && this.z < this.board.length) {
+    }else if (dzOther == 0 && this.z < this.board.length && this.x < this.board.width && this.x > -this.board.width) {
       this.dz = -15;
     } else {
 
       this.dz = dzOther;
     }
+
+    this.dx = 0.13 * dxOther
     // this.dx = dxOther * 0.1;
     this.maxY = this.board.y;
   }
   bounce() {
     while (this.soundsDiv.children.length != 0) {
       // if(this.soundPromise != undefined){
-
         this.soundsDiv.removeChild(this.soundsDiv.children[0]);
       // }
     }
@@ -120,7 +119,6 @@ export class Ball {
       }
       if (this.z > this.board.netPosition) {
         this.opponentBounceCount++;
-        this.justServed = false;
       }
       this.bounce();
     }
