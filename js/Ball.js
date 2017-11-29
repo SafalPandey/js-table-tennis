@@ -21,6 +21,9 @@ export class Ball {
     this.dz = 0;
 
     this.maxY = this.board.y;
+    this.effectAlpha = 0;
+
+    this.justServed = false;
 
     this.shadowY = this.board.y;
     this.bounceCount = 0;
@@ -58,8 +61,10 @@ export class Ball {
   }
 
   reflect(dxOther, dzOther) {
-    if (Math.abs(dzOther) > 20) {
-      this.dz = (dzOther / Math.abs(dzOther)) * 20;
+    if (Math.abs(dzOther) > 15) {
+      this.dz = (dzOther / Math.abs(dzOther)) * 15;
+    }else if (dzOther == 0 && this.z < this.board.length) {
+      this.dz = -15;
     } else {
 
       this.dz = dzOther;
@@ -69,11 +74,15 @@ export class Ball {
   }
   bounce() {
     while (this.soundsDiv.children.length != 0) {
-      this.soundsDiv.removeChild(this.soundsDiv.children[0]);
+      // if(this.soundPromise != undefined){
+
+        this.soundsDiv.removeChild(this.soundsDiv.children[0]);
+      // }
     }
+    console.log(this.z);
     this.dy = -this.dy;
     this.bounceSound = new Sound("sounds/bounce.mp3", this.soundsDiv);
-    this.bounceSound.play();
+    this.soundPromise = this.bounceSound.play();
     console.log(this.bounceCount, this.opponentBounceCount);
   }
   sideCheck() {
@@ -111,6 +120,7 @@ export class Ball {
       }
       if (this.z > this.board.netPosition) {
         this.opponentBounceCount++;
+        this.justServed = false;
       }
       this.bounce();
     }
@@ -121,7 +131,13 @@ export class Ball {
       this.rise();
     }
 
+    }
 
+    showEffect(x,y,z){
+      let point2d = utils.PROJECTOR.get3d(this.x,this.y,this.z);
+      this.ctx.arc(this.center2d.x2d,this.center2d.y2d,20,20,0,Math.PI*2);
+      this.ctx.fillStyle = "rgba(0,0,0,"+this.effectAlpha+")";
+      this.ctx.fill();
 
     // if (this.z < -100) this.reflect();
     // if (this.z > this.board.length) {

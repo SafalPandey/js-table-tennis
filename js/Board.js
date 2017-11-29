@@ -172,7 +172,7 @@ export class Board {
   }
 
   checkPointBound(x2d,y2d,y3d){
-    if(x2d > this.frontLeftPoint2d.x2d && y2d < this.frontLeftPoint2d.y2d && x2d < this.backRightPoint2d.x2d && y2d > this.backRightPoint2d.y2d && y3d > this.y){
+    if(x2d > this.frontLeftPoint2d.x2d && y2d < this.frontLeftPoint2d.y2d && x2d < this.frontRightPoint2d.x2d && y2d > this.backRightPoint2d.y2d && y3d > this.y){
       return true;
     }
   }
