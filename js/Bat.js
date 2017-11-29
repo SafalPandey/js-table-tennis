@@ -52,11 +52,12 @@ export class Bat {
     this.ctx.arc(this.point2d.x2d, this.point2d.y2d,Math.abs(utils.PROJECTOR.get2dLength( this.r,this.z)), Math.PI / 2, Math.PI * 2);
     // this.ctx.fillStyle = "#9c0710";
     if (hasServed) {
-      this.ctx.fillStyle = "rgba(156,7,16,1)";
+      this.alpha = 1
     }
     else {
-      this.ctx.fillStyle = "rgba(156,7,16,0.5)";
+      this.alpha = 0.5
     }
+    this.ctx.fillStyle = "rgba(156,7,16,"+this.alpha+")";
     this.ctx.fill();
     this.ctx.closePath();
     this.ctx.beginPath();
@@ -67,7 +68,7 @@ export class Bat {
     this.ctx.lineTo(this.point2d.x2d + utils.PROJECTOR.get2dLength( 0.7 * this.r,this.z), this.point2d.y2d +utils.PROJECTOR.get2dLength(  this.r,this.z))
     this.ctx.lineTo(this.point2d.x2d, this.point2d.y2d + utils.PROJECTOR.get2dLength( this.r,this.z))
     // this.ctx.fillStyle = "#aa9f7f";
-    this.ctx.fillStyle = "rgba(170,159,127,1)";
+    this.ctx.fillStyle = "rgba(235,185,145,"+this.alpha+")";
     this.ctx.fill();
 
   }

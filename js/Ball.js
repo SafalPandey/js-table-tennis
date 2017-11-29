@@ -74,15 +74,11 @@ export class Ball {
   }
   bounce() {
     while (this.soundsDiv.children.length != 0) {
-      // if(this.soundPromise != undefined){
         this.soundsDiv.removeChild(this.soundsDiv.children[0]);
-      // }
     }
-    console.log(this.z);
     this.dy = -this.dy;
     this.bounceSound = new Sound("sounds/bounce.mp3", this.soundsDiv);
-    this.soundPromise = this.bounceSound.play();
-    console.log(this.bounceCount, this.opponentBounceCount);
+    this.bounceSound.play();
   }
   sideCheck() {
     this.dx = -this.dx;
@@ -90,7 +86,7 @@ export class Ball {
   }
 
   fall() {
-    this.maxY = 500;
+    this.maxY = 600;
   }
   rise() {
     this.maxY = this.board.y - this.r;

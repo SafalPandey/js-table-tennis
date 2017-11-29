@@ -11,7 +11,7 @@ export class Board {
     this.z = 0;
 
     //Dimensions of the board
-    this.width = this.canvas.width / 2 * 0.63; //xMax
+    this.width = this.canvas.width / 2 * 0.65; //xMax
     this.thickness = 10 / 400 * this.canvas.width / 2; //yMax
     this.length = 720 / 400 * this.canvas.width / 2; //zMax
 
@@ -68,7 +68,7 @@ export class Board {
     this.netSquare.onload = () => {
       this.netPattern = this.ctx.createPattern(this.netSquare, 'repeat');
       this.ctx.fillStyle = this.netPattern;
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
 

@@ -228,7 +228,7 @@ class Board {
     this.z = 0;
 
     //Dimensions of the board
-    this.width = this.canvas.width / 2 * 0.63; //xMax
+    this.width = this.canvas.width / 2 * 0.65; //xMax
     this.thickness = 10 / 400 * this.canvas.width / 2; //yMax
     this.length = 720 / 400 * this.canvas.width / 2; //zMax
 
@@ -285,7 +285,7 @@ class Board {
     this.netSquare.onload = () => {
       this.netPattern = this.ctx.createPattern(this.netSquare, 'repeat');
       this.ctx.fillStyle = this.netPattern;
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
 
@@ -513,15 +513,11 @@ class Ball {
   }
   bounce() {
     while (this.soundsDiv.children.length != 0) {
-      // if(this.soundPromise != undefined){
         this.soundsDiv.removeChild(this.soundsDiv.children[0]);
-      // }
     }
-    console.log(this.z);
     this.dy = -this.dy;
     this.bounceSound = new __WEBPACK_IMPORTED_MODULE_0__Sound_js__["a" /* Sound */]("sounds/bounce.mp3", this.soundsDiv);
-    this.soundPromise = this.bounceSound.play();
-    console.log(this.bounceCount, this.opponentBounceCount);
+    this.bounceSound.play();
   }
   sideCheck() {
     this.dx = -this.dx;
@@ -529,7 +525,7 @@ class Ball {
   }
 
   fall() {
-    this.maxY = 500;
+    this.maxY = 600;
   }
   rise() {
     this.maxY = this.board.y - this.r;
@@ -648,11 +644,12 @@ class Bat {
     this.ctx.arc(this.point2d.x2d, this.point2d.y2d,Math.abs(utils.PROJECTOR.get2dLength( this.r,this.z)), Math.PI / 2, Math.PI * 2);
     // this.ctx.fillStyle = "#9c0710";
     if (hasServed) {
-      this.ctx.fillStyle = "rgba(156,7,16,1)";
+      this.alpha = 1
     }
     else {
-      this.ctx.fillStyle = "rgba(156,7,16,0.5)";
+      this.alpha = 0.5
     }
+    this.ctx.fillStyle = "rgba(156,7,16,"+this.alpha+")";
     this.ctx.fill();
     this.ctx.closePath();
     this.ctx.beginPath();
@@ -663,7 +660,7 @@ class Bat {
     this.ctx.lineTo(this.point2d.x2d + utils.PROJECTOR.get2dLength( 0.7 * this.r,this.z), this.point2d.y2d +utils.PROJECTOR.get2dLength(  this.r,this.z))
     this.ctx.lineTo(this.point2d.x2d, this.point2d.y2d + utils.PROJECTOR.get2dLength( this.r,this.z))
     // this.ctx.fillStyle = "#aa9f7f";
-    this.ctx.fillStyle = "rgba(170,159,127,1)";
+    this.ctx.fillStyle = "rgba(235,185,145,"+this.alpha+")";
     this.ctx.fill();
 
   }
@@ -723,9 +720,10 @@ class Game {
     this.ctx = this.canvas.getContext('2d');
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+    this.isStarted = false;
 
     this.bgImg = new Image();
-    this.bgImg.src = "images/bg1.png";
+    this.bgImg.src = "images/background.png";
     this.bgImg.onload = () => {
       this.bgPattern = this.ctx.createPattern(this.bgImg, 'repeat');
       this.ctx.fillStyle = this.bgPattern;
@@ -737,31 +735,86 @@ class Game {
       // y: this.canvas.height * 2.8
 
     }
+
+    this.bgLinearGradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+    this.bgLinearGradient.addColorStop(0, "white");
+    this.bgLinearGradient.addColorStop(1, "black");
     this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius - 200);
     this.bgGradient.addColorStop(0, '#535353');
     this.bgGradient.addColorStop(1, '#a4a4a4');
+
+
 
     this.gravity = 0.006;
     this.isStarted = false;
     this.hasServed = false;
 
-    this.startButton = {
-      x: 1.5 * this.canvas.width / 4,
-      y: this.canvas.height / 2,
-      width: this.canvas.width / 4,
-      height: this.canvas.width / 8,
-      text: "Start Game",
-    };
-    this.restartButton = {
-      x: 1.5 * this.canvas.width / 4,
-      y: this.canvas.height / 2,
-      width: this.canvas.width / 4,
-      height: this.canvas.width / 8,
-      text: "Play Again",
-    };
+    this.scoreBoardImage = new Image();
+    this.scoreBoardImage.src = 'images/scoreboard.png';
+    this.scoreBoardImage.onload = ()=>{
+      this.scoreBoard = {
+        x1:this.canvas.width *0.1,
+        y1:this.canvas.width *0.1,
+        x2:this.canvas.width *0.8,
+        image: this.scoreBoardImage,
+      }
+      this.ctx.drawImage(this.scoreBoardImage,-this.scoreBoardImage.width,0);
+    }
 
-    this.button = this.startButton;
-    this.drawButton();
+    this.playImage = new Image();
+    this.playImage.src = 'images/play.png';
+    this.playImage.onload = () => {
+      this.startButton = {
+        x: 1.75 * this.canvas.width / 4,
+        y: this.canvas.height / 2,
+        width: this.canvas.width / 8,
+        height: this.canvas.width / 8,
+        image: this.playImage,
+        text: "Start Game",
+      };
+
+
+      this.restartButton = {
+        x: 1.75 * this.canvas.width / 4,
+        y: this.canvas.height / 2,
+        width: this.canvas.width / 8,
+        height: this.canvas.width / 8,
+        image: this.playImage,
+        text: "Play Again",
+      };
+      this.button = this.startButton;
+
+      this.board = new __WEBPACK_IMPORTED_MODULE_0__Board_js__["a" /* Board */](this.canvas, this.ctx);
+      this.bat = new __WEBPACK_IMPORTED_MODULE_2__Bat_js__["a" /* Bat */](this.canvas, this.ctx, this.board);
+      this.ball = new __WEBPACK_IMPORTED_MODULE_1__Ball_js__["a" /* Ball */](this.ctx, this.board, this.bat.x, utils.BAT_Y_POSITION, 10, this.soundsDiv);
+
+      this.board.drawBoard();
+      this.bat.drawBat();
+      this.ball.draw();
+      this.drawButton();
+      this.canvas.addEventListener('mousemove', (evt) => {
+        if (this.isStarted) {
+          evt.preventDefault();
+          this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
+          this.bat.x = this.bat.point3d.x;
+          this.bat.y = this.bat.point3d.y;
+          this.bat.z = this.bat.point3d.z;
+        } else {
+          evt.preventDefault();
+          this.bat.x = evt.clientX - this.canvas.width * 0.5;
+          this.bat.y = evt.clientY;
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+          this.board.drawBoard();
+          this.ball.draw();
+          this.bat.drawBat();
+          this.drawButton();
+        }
+
+      }, false);
+    }
+
+
+
     this.canvas.addEventListener('click', (e) => {
       this.handleClick(e)
     }, false);
@@ -786,31 +839,29 @@ class Game {
     }, false);
 
     this.canvas.addEventListener("mouseover", (evt) => {
-      this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
-      this.bat.x = this.bat.point3d.x;
-      this.bat.y = this.bat.point3d.y;
-      this.bat.z = this.bat.point3d.z;
+      if (this.isStarted) {
 
-      this.bat.lastX = this.bat.point3d.x;
-      this.bat.lastZ = this.bat.point3d.z;
+        this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
+        this.bat.x = this.bat.point3d.x;
+        this.bat.y = this.bat.point3d.y;
+        this.bat.z = this.bat.point3d.z;
+
+        this.bat.lastX = this.bat.point3d.x;
+        this.bat.lastZ = this.bat.point3d.z;
+      }
     }, false);
 
-    this.canvas.addEventListener('mousemove', (evt) => {
-      evt.preventDefault();
-      this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
-      this.bat.x = this.bat.point3d.x;
-      this.bat.y = this.bat.point3d.y;
-      this.bat.z = this.bat.point3d.z;
 
-    }, false)
 
     this.canvas.addEventListener('touchmove', (evt) => {
       evt.preventDefault();
       let touch = evt.touches[0];
-      this.bat.point3d = utils.PROJECTOR.get3d(touch.pageX, touch.pageY);
-      this.bat.x = this.bat.point3d.x;
-      this.bat.y = this.bat.point3d.y;
-      this.bat.z = this.bat.point3d.z;
+      if (this.isStarted) {
+        this.bat.point3d = utils.PROJECTOR.get3d(touch.pageX, touch.pageY);
+        this.bat.x = this.bat.point3d.x;
+        this.bat.y = this.bat.point3d.y;
+        this.bat.z = this.bat.point3d.z;
+      }
     }, false)
     this.hasMissed = false;
     this.isStarted = true;
@@ -819,11 +870,21 @@ class Game {
     })
   }
   drawButton() {
+    this.ctx.font = "800 " + this.canvas.width * 0.1 + "px Arial";
+    this.ctx.fillStyle = 'black';
+    this.lineWidth = this.width * 0.5;
+    this.ctx.strokeStyle = 'white';
+    this.ctx.fillText("Table Tennis 3D", this.canvas.width * 0.05, this.canvas.height / 6);
+    this.ctx.strokeText("Table Tennis 3D", this.canvas.width * 0.05, this.canvas.height / 6);
+
     this.ctx.fillStyle = "#00b248";
-    this.ctx.fillRect(this.button.x, this.button.y, this.button.width, this.button.height);
-    this.ctx.fillStyle = "white";
-    this.ctx.font = "30px Arial";
-    this.ctx.fillText(this.button.text, this.button.x + 20, this.button.y + 50);
+    this.ctx.drawImage(this.button.image, this.button.x, this.button.y, this.button.width, this.button.height);
+    this.ctx.fillStyle = "black";
+    this.ctx.font = "800 " + this.canvas.width * 0.02 + "px Arial";
+    this.ctx.strokeStyle = "white"
+    this.ctx.lineWidth = "2";
+    this.ctx.fillText(this.button.text, this.button.x, this.button.y + 50);
+    this.ctx.strokeText(this.button.text, this.button.x, this.button.y + 50);
   }
   handleClick(evt) {
     if (!this.isStarted && evt.clientX > this.button.x && evt.clientX < this.button.x + this.button.width && evt.clientY > this.button.y && evt.clientY < this.button.y + this.button.height) {
@@ -874,10 +935,10 @@ class Game {
   drawBackground() {
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = '#9fffe0';
+    this.ctx.fillStyle = this.bgLinearGradient;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.beginPath();
-    this.ctx.arc(this.bgCenter.x, this.bgCenter.y, this.bgRadius, -Math.PI, 0);
+    this.ctx.arc(this.bgCenter.x, this.bgCenter.y, this.bgRadius, 0, Math.PI * 2);
 
     this.ctx.fillStyle = this.bgGradient;
     // ctx.fillRect(0, 0, 200, 200);
@@ -891,12 +952,17 @@ class Game {
   drawScore() {
     this.ctx.fillStyle = "#fff";
     this.ctx.strokeStyle = "#000";
-    this.ctx.font = "30px Arial";
-    this.ctx.fillText("Your Score: " + this.playerScore, 30, 30);
-    this.ctx.strokeText("Your Score: " + this.playerScore, 30, 30);
-    this.ctx.fillStyle = "#f99";
-    this.ctx.fillText("Opponent's Score: " + this.opponentScore, this.canvas.width - 500, 30);
-    this.ctx.strokeText("Opponent's Score: " + this.opponentScore, this.canvas.width - 500, 30);
+    this.ctx.font = "900 30px Arial";
+    this.ctx.fillRect(this.scoreBoard.x1,this.scoreBoard.y1+6,this.scoreBoard.image.width,this.scoreBoard.image.height-6);
+    this.ctx.drawImage(this.scoreBoard.image,this.scoreBoard.x1,this.scoreBoard.y1);
+    this.ctx.fillText("" + this.playerScore, this.scoreBoard.x1 + 30, this.scoreBoard.y1+45);
+    this.ctx.strokeText("" + this.playerScore, this.scoreBoard.x1 + 30, this.scoreBoard.y1+45);
+
+    this.ctx.fillStyle = "#ff1744";
+    this.ctx.fillRect(this.scoreBoard.x2,this.scoreBoard.y1+6,this.scoreBoard.image.width,this.scoreBoard.image.height-6);
+    this.ctx.drawImage(this.scoreBoard.image,this.scoreBoard.x2,this.scoreBoard.y1);
+    this.ctx.fillText("" + this.opponentScore, this.scoreBoard.x2 + 30, this.scoreBoard.y1+45);
+    this.ctx.strokeText("" + this.opponentScore, this.scoreBoard.x2 + 30, this.scoreBoard.y1+45);
 
   }
 
@@ -908,32 +974,41 @@ class Game {
     this.point = 0;
     this.canvas.style.cursor = "auto";
     this.canvas.removeEventListener("mouseover", (evt) => {
-      this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
-      this.bat.x = this.bat.point3d.x;
-      this.bat.y = this.bat.point3d.y;
-      this.bat.z = this.bat.point3d.z;
+      if (this.isStarted) {
 
-      this.bat.lastX = this.bat.point3d.x;
-      this.bat.lastZ = this.bat.point3d.z;
+        this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
+        this.bat.x = this.bat.point3d.x;
+        this.bat.y = this.bat.point3d.y;
+        this.bat.z = this.bat.point3d.z;
+
+        this.bat.lastX = this.bat.point3d.x;
+        this.bat.lastZ = this.bat.point3d.z;
+      }
     }, false);
 
     this.canvas.removeEventListener('mousemove', (evt) => {
-      evt.preventDefault();
-      this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
-      this.bat.x = this.bat.point3d.x;
-      this.bat.y = this.bat.point3d.y;
-      this.bat.z = this.bat.point3d.z;
+      if (this.isStarted) {
+
+        evt.preventDefault();
+        this.bat.point3d = utils.PROJECTOR.get3d(evt.clientX, evt.clientY);
+        this.bat.x = this.bat.point3d.x;
+        this.bat.y = this.bat.point3d.y;
+        this.bat.z = this.bat.point3d.z;
+      }
 
     }, false)
 
 
     this.canvas.removeEventListener('touchmove', (evt) => {
       evt.preventDefault();
+
       let touch = evt.touches[0];
-      this.bat.point3d = utils.PROJECTOR.get3d(touch.pageX, touch.pageY);
-      this.bat.x = this.bat.point3d.x;
-      this.bat.y = this.bat.point3d.y;
-      this.bat.z = this.bat.point3d.z;
+      if (this.isStarted) {
+        this.bat.point3d = utils.PROJECTOR.get3d(touch.pageX, touch.pageY);
+        this.bat.x = this.bat.point3d.x;
+        this.bat.y = this.bat.point3d.y;
+        this.bat.z = this.bat.point3d.z;
+      }
     }, false)
 
     this.button = this.restartButton;
@@ -966,6 +1041,8 @@ class Game {
             this.ball.opponentBounceCount = 0;
             this.ball.dy = -0.0015 * Math.abs(this.board.length - this.bat.z);
             this.ball.reflect(this.bat.dx, this.bat.dz * 0.5);
+            this.bounceSound = new __WEBPACK_IMPORTED_MODULE_3__Sound_js__["a" /* Sound */]("sounds/bounce.mp3", this.soundsDiv);
+            this.bounceSound.play();
             this.timer = 0;
             this.ball.effectAlpha = 1;
             this.opponentHasTouched = false;
@@ -988,13 +1065,16 @@ class Game {
       }
 
       //move Opponent Bat
-      if (this.ball.z > this.board.length / 2) {
+      if (this.ball.z > this.board.netPosition) {
         this.opponentBat.x = this.ball.x;
         if (this.ball.opponentBounceCount > 0) {
           this.opponentBat.z = this.ball.z;
           this.ball.reflect(this.opponentBat.dx, this.opponentBat.dz);
+
           if (!this.opponentHasTouched) {
-            this.ball.dy = -0.013 * this.opponentBat.z;
+            this.ball.dy = -0.01 * this.opponentBat.z;
+            this.bounceSound = new __WEBPACK_IMPORTED_MODULE_3__Sound_js__["a" /* Sound */]("sounds/bounce.mp3", this.soundsDiv);
+            this.bounceSound.play();
             this.opponentHasTouched = true;
             this.ball.bounceCount = 0;
 
@@ -1046,7 +1126,7 @@ class Game {
       this.ball.effectAlpha -= 0.05;
     }
 
-    if (this.ball.bounceCount > 5 || this.ball.opponentBounceCount > 5) {
+    if (this.ball.bounceCount > 3 || this.ball.opponentBounceCount > 3) {
       this.getAnotherBall();
     }
 
