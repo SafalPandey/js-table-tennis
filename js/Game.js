@@ -275,7 +275,7 @@ export class Game {
         }
 
         if (this.justServed && !this.opponentHasTouched){
-        if ((this.ball.bounceCount == 0 && this.ball.opponentBounceCount > 0)) {
+        if ((this.ball.bounceCount == 0 && this.ball.opponentBounceCount > 0) || (this.ball.bounceCount == 1 && this.ball.z > this.board.length && this.ball.opponentBounceCount == 0) ) {
           this.removePoint();
         }
       }
