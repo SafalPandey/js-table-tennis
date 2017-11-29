@@ -235,6 +235,8 @@ class Board {
     this.netHeight = this.y - 55 / 400 * this.width;
     this.netPosition = this.length / 2;
 
+    this.legLength = 300;
+
     this.borderWidth = 10 / 400 * this.width;
 
     this.frontLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width, this.y, this.z);
@@ -262,11 +264,21 @@ class Board {
     this.innerSurfaceBackLeftPoint2d = utils.PROJECTOR.get2d(this.x - this.width + this.borderWidth, this.y, this.z + this.length - this.borderWidth);
     this.innerSurfaceFrontLeftoint2d = utils.PROJECTOR.get2d(this.x - this.width + this.borderWidth, this.y, this.z + this.borderWidth);
 
-
     this.centerBorderFrontLeftPoint2d = utils.PROJECTOR.get2d(this.x - 5 / 400 * this.width, this.y, this.z);
     this.centerBorderFrontRightPoint2d = utils.PROJECTOR.get2d(this.x + 5 / 400 * this.width, this.y, this.z);
     this.centerBorderBackLeftPoint2d = utils.PROJECTOR.get2d(this.x - 5 / 400 * this.width, this.y, this.z + this.length);
     this.centerBorderBackRightPoint2d = utils.PROJECTOR.get2d(this.x + 5 / 400 * this.width, this.y, this.z + this.length);
+
+    this.frontLeftLegLPoint2d = utils.PROJECTOR.get2d(this.x - 380 / 400 * this.width, this.y, this.z + 50 / 400 * this.width);
+    this.frontBottomLeftLegLPoint2d = utils.PROJECTOR.get2d(this.x - 380 / 400 * this.width, this.y + this.legLength, this.z + 50 / 400 * this.width);
+    this.frontLeftLegRPoint2d = utils.PROJECTOR.get2d(this.x - 360 / 400 * this.width, this.y, this.z + 50 / 400 * this.width);
+    this.frontBottomLeftLegRPoint2d = utils.PROJECTOR.get2d(this.x - 360 / 400 * this.width, this.y + this.legLength, this.z + 50 / 400 * this.width);
+
+    this.frontRightLegLPoint2d = utils.PROJECTOR.get2d(this.x + 380 / 400 * this.width, this.y, this.z + 50 / 400 * this.width);
+    this.frontBottomRightLegLPoint2d = utils.PROJECTOR.get2d(this.x + 380 / 400 * this.width, this.y + this.legLength, this.z + 50 / 400 * this.width);
+    this.frontRightLegRPoint2d = utils.PROJECTOR.get2d(this.x + 360 / 400 * this.width, this.y, this.z + 50 / 400 * this.width);
+    this.frontBottomRightLegRPoint2d = utils.PROJECTOR.get2d(this.x + 360 / 400 * this.width, this.y + this.legLength, this.z + 50 / 400 * this.width);
+
 
     this.netSquare = new Image();
     this.netSquare.src = 'images/netSquare.png';
@@ -280,6 +292,18 @@ class Board {
     this.drawBoard();
   }
   drawBoard(isSingle) {
+
+    //leg drawing
+    this.ctx.beginPath();
+    //leg path
+    this.makeLeftLegs();
+    this.ctx.fillStyle = '#060402';
+    this.ctx.fill();
+    this.ctx.closePath();
+
+    this.makeRightLegs();
+    this.ctx.fill();
+    this.ctx.closePath();
 
     //outer white surface drawing
     this.ctx.beginPath();
@@ -314,8 +338,7 @@ class Board {
     this.ctx.fillStyle = "#122c5f";
     this.ctx.fill();
     this.ctx.closePath();
-    // this.ctx.arc(utils.PROJECTOR.get2d(this.x, this.y, this.z).x2d, utils.PROJECTOR.get2d(this.x, this.y, this.z).y2d, 10, 0, 2 * Math.PI);
-    // this.ctx.fillStyle = "red";
+
     //net drawing
     this.ctx.beginPath();
     //net path
@@ -324,15 +347,9 @@ class Board {
     this.ctx.fill();
     this.ctx.closePath();
 
-    // if (isSingle) {
-    //   this.ctx.beginPath();
-    //   this.makeOtherHalfVertical();
-    //   this.ctx.stroke();
-    //   this.ctx.fillStyle = "#24529b"
-    //   this.ctx.fill();
-    //   this.ctx.closePath();
-    // }
-    // this.ctx.fill();
+
+
+
   }
   makeOuterWhiteSurface() {
     this.ctx.moveTo(this.frontLeftPoint2d.x2d, this.frontLeftPoint2d.y2d);
@@ -382,16 +399,32 @@ class Board {
     this.ctx.lineTo(this.frontRightTopPoint2d.x2d, this.frontRightTopPoint2d.y2d);
   }
   makeOtherHalfVertical() {
-    this.ctx.moveTo(this.singlePlayerMiddleLeftPoint2d.x2d, this.singlePlayerMiddleLeftPoint2d.y2d)
-    this.ctx.lineTo(this.singlePlayerMiddleRightPoint2d.x2d, this.singlePlayerMiddleRightPoint2d.y2d)
-    this.ctx.lineTo(this.singlePlayerMiddleRightPoint2d.x2d, this.singlePlayerMiddleRightTopPoint2d.y2d)
-    this.ctx.lineTo(this.singlePlayerMiddleLeftPoint2d.x2d, this.singlePlayerMiddleLeftTopPoint2d.y2d)
+    this.ctx.moveTo(this.singlePlayerMiddleLeftPoint2d.x2d, this.singlePlayerMiddleLeftPoint2d.y2d);
+    this.ctx.lineTo(this.singlePlayerMiddleRightPoint2d.x2d, this.singlePlayerMiddleRightPoint2d.y2d);
+    this.ctx.lineTo(this.singlePlayerMiddleRightPoint2d.x2d, this.singlePlayerMiddleRightTopPoint2d.y2d);
+    this.ctx.lineTo(this.singlePlayerMiddleLeftPoint2d.x2d, this.singlePlayerMiddleLeftTopPoint2d.y2d);
   }
 
-  checkPointBound(x2d,y2d,y3d){
-    let determinantLeftSide = (x2d-this.frontLeftoint2d.x2d)*(this.backLeftPoint2d.y2d - this.frontLeftoint2d.y2d) - (y2d - this.frontLeftoint2d.y2d)*(this.backLeftPoint2d.x2d - this.frontLeftoint2d.x2d)
-    let determinantRightSide = (x2d-this.frontRightPoint2d.x2d)*(this.backRightPoint2d.y2d - this.frontRightPoint2d.y2d) - (y2d - this.frontRightPoint2d.y2d)*(this.backRightPoint2d.x2d - this.frontRightPoint2d.x2d)
-    if(y2d > this.backLeftPoint2d.y2d && y2d < this.frontLeftoint2d.y2d && determinantLeftSide < 0 && determinantRightSide > 0 && y3d > this.y){
+  makeLeftLegs() {
+    this.ctx.moveTo(this.frontLeftLegLPoint2d.x2d, this.frontLeftLegLPoint2d.y2d);
+    this.ctx.lineTo(this.frontBottomLeftLegLPoint2d.x2d, this.frontBottomLeftLegLPoint2d.y2d);
+    this.ctx.lineTo(this.frontBottomLeftLegRPoint2d.x2d, this.frontBottomLeftLegRPoint2d.y2d);
+    this.ctx.lineTo(this.frontLeftLegRPoint2d.x2d, this.frontLeftLegRPoint2d.y2d);
+
+  }
+
+  makeRightLegs() {
+    this.ctx.moveTo(this.frontRightLegLPoint2d.x2d, this.frontRightLegLPoint2d.y2d);
+    this.ctx.lineTo(this.frontBottomRightLegLPoint2d.x2d, this.frontBottomRightLegLPoint2d.y2d);
+    this.ctx.lineTo(this.frontBottomRightLegRPoint2d.x2d, this.frontBottomRightLegRPoint2d.y2d);
+    this.ctx.lineTo(this.frontRightLegRPoint2d.x2d, this.frontRightLegRPoint2d.y2d);
+
+  }
+
+  checkPointBound(x2d, y2d, y3d) {
+    let determinantLeftSide = (x2d - this.frontLeftoint2d.x2d) * (this.backLeftPoint2d.y2d - this.frontLeftoint2d.y2d) - (y2d - this.frontLeftoint2d.y2d) * (this.backLeftPoint2d.x2d - this.frontLeftoint2d.x2d);
+    let determinantRightSide = (x2d - this.frontRightPoint2d.x2d) * (this.backRightPoint2d.y2d - this.frontRightPoint2d.y2d) - (y2d - this.frontRightPoint2d.y2d) * (this.backRightPoint2d.x2d - this.frontRightPoint2d.x2d);
+    if (y2d > this.backLeftPoint2d.y2d && y2d < this.frontLeftoint2d.y2d && determinantLeftSide < 0 && determinantRightSide > 0 && y3d > this.y) {
       return true;
     }
   }
@@ -704,8 +737,8 @@ class Game {
       // y: this.canvas.height * 2.8
 
     }
-    this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius - 100);
-    this.bgGradient.addColorStop(0, '#757575');
+    this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius - 200);
+    this.bgGradient.addColorStop(0, '#535353');
     this.bgGradient.addColorStop(1, '#a4a4a4');
 
     this.gravity = 0.006;

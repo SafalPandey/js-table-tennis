@@ -38,8 +38,8 @@ export class Game {
       // y: this.canvas.height * 2.8
 
     }
-    this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius - 100);
-    this.bgGradient.addColorStop(0, '#757575');
+    this.bgGradient = this.ctx.createRadialGradient(this.bgCenter.x, this.bgCenter.y, this.bgRadius, this.bgCenter.x, this.bgCenter.y, this.bgRadius - 200);
+    this.bgGradient.addColorStop(0, '#535353');
     this.bgGradient.addColorStop(1, '#a4a4a4');
 
     this.gravity = 0.006;
