@@ -929,10 +929,9 @@ class Game {
       if (this.hasServed) {
         if (this.opponentHasTouched) {
           if (this.ball.z < this.bat.z && this.ball.x > this.bat.x - this.bat.r && this.ball.x < this.bat.x + this.bat.r && this.ball.y > this.bat.y - this.bat.r) {
-            console.log("reflected");
             this.ball.bounceCount = 0;
             this.ball.opponentBounceCount = 0;
-            this.ball.dy = -0.015 * Math.abs(this.bat.z);
+            this.ball.dy = -0.0015 * Math.abs(this.board.length - this.bat.z);
             this.ball.reflect(this.bat.dx, this.bat.dz * 0.5);
             this.timer = 0;
             this.ball.effectAlpha = 1;
