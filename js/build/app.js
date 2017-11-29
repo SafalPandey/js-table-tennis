@@ -938,11 +938,19 @@ class Game {
           }
         }
 
-        if (this.justServed && !this.opponentHasTouched){
-        if ((this.ball.bounceCount == 0 && this.ball.opponentBounceCount > 0) || (this.ball.bounceCount == 1 && this.ball.z > this.board.length && this.ball.opponentBounceCount == 0) ) {
-          this.removePoint();
+        if (this.justServed && !this.opponentHasTouched) {
+          if ((this.ball.bounceCount == 0 && this.ball.opponentBounceCount > 0) || (this.ball.bounceCount == 1 && this.ball.z > this.board.length && this.ball.opponentBounceCount == 0)) {
+            this.removePoint();
+          }
         }
-      }
+
+        if (!this.justServed) {
+
+
+          if (!this.opponentHasTouched && this.ball.bounceCount > 0 || (this.ball.bounceCount == 0 && this.ball.opponentBounceCount == 0 && this.ball.z > this.board.length)) {
+            this.removePoint();
+          }
+        }
       }
 
       //move Opponent Bat
@@ -984,12 +992,15 @@ class Game {
       this.hasServed = false;
 
       //award or remove point before making new ball
-      if (this.ball.opponentBounceCount == 1 && this.ball.bounceCount == 0) {
-        this.awardPoint();
-      } else if (this.ball.opponentBounceCount == 1 && this.ball.bounceCount == 1 || this.ball.opponentBounceCount == 0 && this.ball.bounceCount == 1) {
-        this.removePoint();
-      }
+      if (!this.hasMissed) {
 
+        if (this.ball.opponentBounceCount == 1 && this.ball.bounceCount == 0) {
+          this.awardPoint();
+        } else if (this.ball.opponentBounceCount == 1 && this.ball.bounceCount == 1 || this.ball.opponentBounceCount == 0 && this.ball.bounceCount == 1) {
+          this.removePoint();
+        }
+
+      }
       this.getAnotherBall();
     }
 
