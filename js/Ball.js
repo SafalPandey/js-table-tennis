@@ -116,6 +116,7 @@ export class Ball {
       if (this.z > this.board.netPosition) {
         this.opponentBounceCount++;
       }
+      this.y -=this.r;
       this.bounce();
     }
 

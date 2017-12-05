@@ -555,6 +555,7 @@ class Ball {
       if (this.z > this.board.netPosition) {
         this.opponentBounceCount++;
       }
+      this.y -=this.r;
       this.bounce();
     }
 
@@ -1023,7 +1024,7 @@ class Game {
     this.drawBackground();
     this.drawScore();
     this.board.drawBoard();
-    if (this.ball.y < this.board.y) this.ball.dy += this.gravity * this.timer;
+    if (this.ball.y < this.board.y - this.ball.r) this.ball.dy += this.gravity * this.timer;
     // else this.ball.dy = 0;
     this.ball.updatePosition();
 
@@ -1123,7 +1124,7 @@ class Game {
       this.ball.effectAlpha -= 0.05;
     }
 
-    if (this.ball.bounceCount > 3 || this.ball.opponentBounceCount > 3) {
+    if (this.ball.bounceCount > 2 || this.ball.opponentBounceCount > 2) {
       this.getAnotherBall();
     }
 
