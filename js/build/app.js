@@ -771,7 +771,7 @@ class Game {
 
       this.restartButton = {
         x: 1.75 * this.canvas.width / 4,
-        y: this.canvas.wodth * 0.3,
+        y: this.canvas.width * 0.3,
         width: this.canvas.width / 8,
         height: this.canvas.width / 8,
         image: this.playImage,
