@@ -723,12 +723,6 @@ class Game {
 
     this.isStarted = false;
 
-    this.bgImg = new Image();
-    this.bgImg.src = "images/background.png";
-    this.bgImg.onload = () => {
-      this.bgPattern = this.ctx.createPattern(this.bgImg, 'repeat');
-      this.ctx.fillStyle = this.bgPattern;
-    }
     this.bgRadius = Math.floor(this.canvas.width * 1.2);
     this.bgCenter = {
       x: this.canvas.width / 2,
@@ -767,7 +761,7 @@ class Game {
     this.playImage.onload = () => {
       this.startButton = {
         x: 1.75 * this.canvas.width / 4,
-        y: this.canvas.height / 2,
+        y: this.canvas.width *0.3,
         width: this.canvas.width / 8,
         height: this.canvas.width / 8,
         image: this.playImage,
@@ -777,7 +771,7 @@ class Game {
 
       this.restartButton = {
         x: 1.75 * this.canvas.width / 4,
-        y: this.canvas.height / 2,
+        y: this.canvas.wodth * 0.3,
         width: this.canvas.width / 8,
         height: this.canvas.width / 8,
         image: this.playImage,
