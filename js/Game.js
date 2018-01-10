@@ -172,8 +172,8 @@ export class Game {
     this.ctx.fillStyle = 'black';
     this.lineWidth = this.width * 0.5;
     this.ctx.strokeStyle = 'white';
-    this.ctx.fillText("Table Tennis 3D", this.canvas.width * 0.05, this.canvas.height / 6);
-    this.ctx.strokeText("Table Tennis 3D", this.canvas.width * 0.05, this.canvas.height / 6);
+    this.ctx.fillText("Table Tennis 3D", this.canvas.width * 0.1, this.canvas.height / 6);
+    this.ctx.strokeText("Table Tennis 3D", this.canvas.width * 0.1, this.canvas.height / 6);
 
     this.ctx.fillStyle = "#00b248";
     this.ctx.drawImage(this.button.image, this.button.x, this.button.y, this.button.width, this.button.height);
