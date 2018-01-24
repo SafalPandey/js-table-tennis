@@ -2,7 +2,7 @@
 
 
 <h2>To play online</h2>
- <a href="https://cdn.rawgit.com/leapfroglets/table-tennis-3d/master/index.html">Try it Here!!! </a>
+ <a href="https://safalpandey.github.io/js-table-tennis">Try it Here!!! </a>
 
 <h3><strong>How to play</strong></h3>
 <p>
@@ -21,7 +21,7 @@ That's it! All rules are the same as a real table tennis game.
 <h2>To try it locally</h2>
 <h3><strong>Clone the repo to your desired directory</strong></h3>
 <p>
-    <pre><code>git clone https://github.com/leapfroglets/table-tennis-3d.git</code></pre>
+    <pre><code>git clone https://github.com/SafalPandey/js-table-tennis.git</code></pre>
 </p>
 <h3><strong>Navigate to the directory</strong></h3>
 
