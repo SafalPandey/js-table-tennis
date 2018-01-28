@@ -27,7 +27,7 @@ That's it! All rules are the same as a real table tennis game.
 <h3><strong>Navigate to the directory</strong></h3>
 
 <p>
-    <pre><code>cd table-tennis-3d</code></pre>
+    <pre><code>cd js-table-tennis</code></pre>
 </p>
 
 <h3><strong>Install the dependencies</strong></h3>
