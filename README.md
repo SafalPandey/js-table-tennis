@@ -1,5 +1,6 @@
 # Table Tennis 3D (js-table-tennis)
 
+>[Read The Related Blog Here](https://medium.com/front-end-hacking/how-i-created-3d-table-tennis-using-vanilla-javascript-in-2-weeks-79c0a713d486)
 
 <h2>To play online</h2>
  <a href="https://safalpandey.github.io/js-table-tennis">Try it Here!!! </a>
